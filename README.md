@@ -1,8 +1,25 @@
-# PROJECT FORGE Growth Engine(TM)
+# PROJECT FORGE Revenue OS™
 
 ## Mission
 
-PROJECT FORGE Growth Engine(TM) is a documentation-first research and product strategy repository for understanding, evaluating, and eventually designing a growth automation platform. It is the permanent knowledge base for disciplined product discovery: observations are separated from interpretation, assumptions are made visible, and future implementation is gated by evidence.
+PROJECT FORGE Revenue OS™ is a documentation-first research and product strategy repository for understanding, evaluating, and eventually designing an AI Revenue Operating System. It is the permanent knowledge base for disciplined product discovery: observations are separated from interpretation, assumptions are made visible, and future implementation is gated by evidence.
+
+The platform vision spans the full commercial lifecycle:
+
+- Prospect Intelligence
+- Company Intelligence
+- ICP Engine
+- Sales Research
+- Outreach Intelligence
+- Email Engine
+- LinkedIn Engine
+- Voice AI
+- WhatsApp AI
+- CRM Intelligence
+- Appointment Scheduling
+- Digital Employees
+- Revenue Analytics
+- Continuous Learning
 
 The first mission, **OPERATION PROMETHEUS**, is a forensic audit of Explee AutoGTM based only on observable product behavior, screenshots, documentation, public information, and authorized user testing. This repository does not contain proprietary code, protected-system data, or automated interactions with third-party systems.
 
@@ -26,6 +43,8 @@ The first mission, **OPERATION PROMETHEUS**, is a forensic audit of Explee AutoG
 | [`docs/research`](docs/research/) | Research notes, interviews, public-information reviews, and questions |
 | [`docs/reports`](docs/reports/) | Polished mission outputs and executive summaries |
 | [`docs/roadmap`](docs/roadmap/) | Strategic sequencing and mission-level roadmap |
+| [`docs/vision`](docs/vision/) | Long-term Revenue OS vision |
+| [`docs/adr`](docs/adr/) | Architecture decision records |
 | [`docs/competitive-analysis`](docs/competitive-analysis/) | Competitor and alternative analyses |
 | [`docs/business-model`](docs/business-model/) | ICP, value proposition, monetization, and operating-model hypotheses |
 | [`docs/workflows`](docs/workflows/) | User and AI workflow documentation |
@@ -58,4 +77,3 @@ Use these labels consistently:
 ## Current Status
 
 Mission 001 is the repository-foundation mission. No product implementation is authorized by this mission. The next step is to populate evidence records through approved observation, documentation review, screenshots, and user testing.
-

@@ -2,7 +2,7 @@
 
 **Subject:** Explee AutoGTM
 **Mission type:** Product audit and opportunity discovery
-**Repository role:** Permanent research record for PROJECT FORGE Growth Engine(TM)
+**Repository role:** Permanent research record for PROJECT FORGE Revenue OS™
 **Status:** Framework established; evidence collection pending
 **Scope:** Software architecture, UX, AI workflows, business strategy, automation, scalability, and opportunities
 

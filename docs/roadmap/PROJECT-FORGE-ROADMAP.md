@@ -1,8 +1,8 @@
-# PROJECT FORGE Growth Engine(TM) Roadmap
+# PROJECT FORGE Revenue OS™ Roadmap
 
 ## North Star
 
-Help companies turn a well-defined market hypothesis into measurable, responsible revenue workflows: discover the right leads, qualify them, personalize outreach, automate conversations, schedule appointments, learn from outcomes, and coordinate Digital Employees with human teams.
+Help companies operate the full commercial lifecycle through measurable, responsible AI workflows: build prospect and company intelligence, define ICPs, conduct sales research, personalize outreach across email and LinkedIn, automate conversations through email, voice, and WhatsApp, maintain CRM intelligence, schedule appointments, learn from outcomes, and coordinate Digital Employees with human teams.
 
 ## Stages
 
@@ -10,27 +10,27 @@ Help companies turn a well-defined market hypothesis into measurable, responsibl
 
 Establish the audit corpus, evidence register, glossary, decision records, and research protocols. Validate the highest-value workflows and risks before designing implementation.
 
-### Stage 1: Market And ICP Intelligence
+### Stage 1: Prospect, Company, And ICP Intelligence
 
-Model companies, personas, ICP criteria, buying signals, exclusions, and qualification rules. Make assumptions inspectable and reusable across campaigns.
+Model prospects, companies, personas, ICP criteria, buying signals, exclusions, sales research, and qualification rules. Make assumptions inspectable and reusable across campaigns.
 
 ### Stage 2: Lead Discovery And Qualification
 
 Create governed discovery workflows with source provenance, enrichment, deduplication, scoring, freshness, consent safeguards, and human review for uncertain matches.
 
-### Stage 3: Personalization And Outreach
+### Stage 3: Outreach Intelligence And Multichannel Engagement
 
-Generate grounded, brand-consistent outreach from approved context. Support review, variants, suppression, deliverability controls, and clear explanations for personalization.
+Generate grounded, brand-consistent outreach across email and LinkedIn from approved context. Support review, variants, suppression, deliverability controls, and clear explanations for personalization.
 
-### Stage 4: Conversation Automation
+### Stage 4: Conversation Automation Across Channels
 
-Classify replies, suggest next actions, draft responses, escalate edge cases, and stop automation when intent, risk, or uncertainty requires human ownership.
+Classify replies, suggest next actions, draft responses, and manage email, voice, and WhatsApp conversations. Escalate edge cases and stop automation when intent, risk, or uncertainty requires human ownership.
 
-### Stage 5: Scheduling And Handoff
+### Stage 5: CRM Intelligence, Scheduling, And Handoff
 
-Coordinate qualification outcomes with appointment scheduling, ownership, calendar availability, CRM state, and handoff accountability.
+Coordinate qualification outcomes with CRM intelligence, appointment scheduling, ownership, calendar availability, and handoff accountability.
 
-### Stage 6: Outcome Learning
+### Stage 6: Revenue Analytics And Continuous Learning
 
 Connect actions to outcomes, measure quality as well as volume, support experiments, identify drift, and feed validated learnings back into ICP, messaging, and decision policies.
 
@@ -45,4 +45,3 @@ Score opportunities by user value, evidence strength, strategic differentiation,
 ## Non-Goals For Mission 001
 
 No production code, autonomous outreach, protected-system scraping, reverse engineering, or claims about unverified vendor internals.
-
