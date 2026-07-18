@@ -1,6 +1,6 @@
 # PROJECT FORGE Revenue OS™
 
-![Status: Pre-launch](https://img.shields.io/badge/status-pre--launch-6b7280)
+![Status: Phase I MVP](https://img.shields.io/badge/status-phase%20I%20MVP-2f855a)
 
 Canonical repository slug: `project-forge-revenue-os`
 
@@ -82,7 +82,18 @@ Use these labels consistently:
 
 ## Current Status
 
-Mission 004 establishes the first provider-agnostic Revenue Intelligence Engine architecture. Runtime implementation, provider APIs, UI, marketing pages, and automations remain intentionally deferred until the documented contracts and roadmap authorize them.
+Phase I now includes a dependency-free executable MVP. The runtime is intentionally bounded: it provides a local authenticated workspace, pipeline management, opportunity records, deterministic evidence-first insights, KPIs, timeline, executive review, and settings. External providers, persistence, and autonomous execution remain deferred behind the documented provider-neutral boundaries.
+
+## Run the MVP
+
+```bash
+npm install
+npm run build
+npm test
+npm start
+```
+
+Open `http://localhost:3000` and use `admin@projectforge.local` / `forge-demo` for the local demo foundation. See [`IMPLEMENTATION-REPORT.md`](IMPLEMENTATION-REPORT.md) for delivered scope, limitations, and the next sprint.
 
 ## GitHub Launch
 

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="PROJECT FORGE Revenue OS Phase I MVP" />
+    <title>PROJECT FORGE Revenue OS</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app" class="shell">
+      <section id="login-view" class="login-card">
+        <div class="brand-mark">PF</div>
+        <p class="eyebrow">PROJECT FORGE</p>
+        <h1>Revenue OS</h1>
+        <p class="muted">A focused command center for evidence-led revenue operations.</p>
+        <form id="login-form" class="stack">
+          <label>Email<input name="email" type="email" value="admin@projectforge.local" required /></label>
+          <label>Password<input name="password" type="password" value="forge-demo" required /></label>
+          <button class="primary" type="submit">Enter workspace</button>
+          <p id="login-error" class="error" role="alert"></p>
+        </form>
+        <small class="muted">Phase I demo foundation · admin@projectforge.local</small>
+      </section>
+      <div id="product-view" hidden>
+        <header class="topbar">
+          <div class="brand"><span class="brand-mark small">PF</span><div><strong>Revenue OS</strong><span>PROJECT FORGE</span></div></div>
+          <div class="top-actions"><span id="user-label" class="muted"></span><button id="logout" class="ghost">Sign out</button></div>
+        </header>
+        <div class="layout">
+          <aside class="sidebar">
+            <nav id="nav" aria-label="Primary navigation">
+              <button class="nav-item active" data-view="overview">Overview</button>
+              <button class="nav-item" data-view="pipeline">Pipeline</button>
+              <button class="nav-item" data-view="timeline">Customer timeline</button>
+              <button class="nav-item" data-view="insights">AI insights</button>
+              <button class="nav-item" data-view="executive">Executive view</button>
+              <button class="nav-item" data-view="settings">Settings</button>
+            </nav>
+            <div class="sidebar-note"><span class="status-dot"></span><strong>Evidence-first mode</strong><p>Insights explain their evidence and confidence.</p></div>
+          </aside>
+          <main id="main" class="content"></main>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "project-forge-revenue-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PROJECT FORGE Revenue OS Phase I MVP",
+  "type": "module",
+  "scripts": {
+    "start": "node runtime/server.mjs",
+    "dev": "node --watch runtime/server.mjs",
+    "build": "node --check runtime/domain.mjs && node --check runtime/store.mjs && node --check runtime/server.mjs && node --check public/app.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
