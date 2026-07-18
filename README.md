@@ -82,7 +82,7 @@ Use these labels consistently:
 
 ## Current Status
 
-Mission 001 is the repository-foundation mission. No product implementation is authorized by this mission. The next step is to populate evidence records through approved observation, documentation review, screenshots, and user testing.
+Mission 004 establishes the first provider-agnostic Revenue Intelligence Engine architecture. Runtime implementation, provider APIs, UI, marketing pages, and automations remain intentionally deferred until the documented contracts and roadmap authorize them.
 
 ## GitHub Launch
 
