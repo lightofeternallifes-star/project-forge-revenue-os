@@ -128,7 +128,7 @@ Each Digital Employee has one primary department, one operational Manager, a bou
 
 ### Atlas
 
-- **Digital Employee ID:** `DE-ATLAS-001`
+- **Digital Employee ID:** `DE-012A`
 - **Role:** Prospect and Company Researcher
 - **Mission:** Collect and synthesize authorized intelligence with citations and explicit uncertainty.
 - **Department:** Atlas Intelligence
