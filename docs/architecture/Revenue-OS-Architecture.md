@@ -4,6 +4,8 @@
 
 Mission 004 foundation. This document defines production-oriented boundaries and future contracts; it does not describe implemented runtime behavior.
 
+The canonical engine catalog for Mission 006 is maintained in [`Revenue-OS-Canonical-Engines.md`](Revenue-OS-Canonical-Engines.md).
+
 ## System Layers
 
 1. **Experience and control plane:** future human and administrative surfaces for approvals, policy, configuration, and audit review. UI is outside this mission.
