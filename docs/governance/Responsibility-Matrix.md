@@ -21,4 +21,3 @@ Legend: **A** accountable owner, **R** responsible operator, **C** consulted, **
 | Learning and retraining | Learning | Learnia, Learning Specialists | Employee Operations, Analytics | Learning |
 
 No department may claim accountability for another department's canonical data. Shared outcomes are coordinated through events and councils, not duplicated ownership.
-

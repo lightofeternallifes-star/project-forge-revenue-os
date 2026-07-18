@@ -16,4 +16,3 @@ The accountable department owns ordinary decisions within approved policy. Cross
 ## Controls
 
 All policies have owner, scope, version, effective date, evidence basis, approval, review date, and rollback or supersession path. Every Digital Employee capability grant, provider route, data export, permission change, and consequential action is auditable.
-

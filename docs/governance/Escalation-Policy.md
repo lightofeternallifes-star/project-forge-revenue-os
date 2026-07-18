@@ -18,4 +18,3 @@ Digital Employees stop and escalate when permission is absent, evidence is insuf
 ## Required Escalation Record
 
 Record issue, affected entities, severity, evidence, current action, stop decision, owner, deadline, requested decision, policy version, and resolution. Closure requires owner confirmation and audit evidence.
-

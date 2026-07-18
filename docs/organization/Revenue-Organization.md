@@ -66,4 +66,3 @@ Every responsibility, canonical entity, policy, KPI, evidence class, and escalat
 ## Scale Model
 
 The hierarchy is logical and can serve one customer or millions. Organizations, departments, Digital Employees, workflows, evidence, and permissions are tenant-scoped and versioned. Physical teams, queues, regions, and work pools may scale independently without changing the canonical organization model.
-

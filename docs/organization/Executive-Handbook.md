@@ -20,4 +20,3 @@ Every executive review includes revenue performance, customer health, intelligen
 - Which customers, companies, or users are affected?
 - What is automated, what requires approval, and what is reversible?
 - What did the organization learn, and how is that learning governed?
-

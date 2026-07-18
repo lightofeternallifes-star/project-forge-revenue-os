@@ -565,4 +565,3 @@ Each Digital Employee has one primary department, one operational Manager, a bou
 - **Permissions:** Read consented context; draft and recommend; no unapproved external action.
 - **Evidence produced:** Intent, response grounding, handoff, and outcome evidence
 - **Future specialization path:** Customer Conversation Director.
-

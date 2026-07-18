@@ -18,4 +18,3 @@ The CEO is the final accountable executive. Executive leaders report to the CEO.
 ## Matrix Reporting
 
 Functional review may cross executive lines without changing accountability. Security, Compliance, and Audit may block or escalate work. Analytics may certify metric definitions but does not own source entities. Knowledge may reject unpublished or unsupported shared context but does not own the source domain.
-

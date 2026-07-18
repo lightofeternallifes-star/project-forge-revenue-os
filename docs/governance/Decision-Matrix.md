@@ -12,4 +12,3 @@
 | Data export or cross-tenant share | Data owner Manager | Explicit authorized approval | Security, Compliance, Audit | Chief Risk and Trust Officer |
 | Learning policy publication | Learning Director | Evaluation and owner approval | Security, Compliance, Employee Operations | Intelligence Council |
 | Audit finding closure | Finding owner | Auditor verification | Audit | Chief Risk and Trust Officer |
-

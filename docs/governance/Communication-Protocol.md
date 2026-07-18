@@ -19,4 +19,3 @@ Every material communication identifies sender, recipient, organization, subject
 ## Cross-Department Handoffs
 
 Handoffs include current state, requested outcome, source and evidence references, open risks, owner, due time, policy version, and acceptance or rejection. Rejected handoffs return a reason and next escalation path.
-
