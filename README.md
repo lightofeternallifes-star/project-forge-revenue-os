@@ -1,5 +1,11 @@
 # PROJECT FORGE Revenue OS™
 
+![Status: Pre-launch](https://img.shields.io/badge/status-pre--launch-6b7280)
+
+Canonical repository slug: `project-forge-revenue-os`
+
+Future repository URL: `https://github.com/PROJECT-FORGE/project-forge-revenue-os`
+
 ## Mission
 
 PROJECT FORGE Revenue OS™ is a documentation-first research and product strategy repository for understanding, evaluating, and eventually designing an AI Revenue Operating System. It is the permanent knowledge base for disciplined product discovery: observations are separated from interpretation, assumptions are made visible, and future implementation is gated by evidence.
@@ -77,3 +83,7 @@ Use these labels consistently:
 ## Current Status
 
 Mission 001 is the repository-foundation mission. No product implementation is authorized by this mission. The next step is to populate evidence records through approved observation, documentation review, screenshots, and user testing.
+
+## GitHub Launch
+
+Launch metadata and pre-push validation are tracked in [`docs/github/GITHUB_LAUNCH_CHECKLIST.md`](docs/github/GITHUB_LAUNCH_CHECKLIST.md).
