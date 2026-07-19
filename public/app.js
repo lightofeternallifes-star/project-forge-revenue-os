@@ -108,6 +108,13 @@ function certificationsView() {
     <section class="panel">${panelHead('Certification history', 'Certificates, diplomas, and executive reviews') }<div class="table-wrap"><table class="table"><thead><tr><th>Employee</th><th>Level</th><th>Executive review</th><th>Graduated</th><th>Artifacts</th><th>Re-certification</th></tr></thead><tbody>${records.map((employee) => `<tr><td>${employeeCell(employee)}</td><td>${badge(employee.certificationLevel)}</td><td>${badge(employee.performanceMetrics.review === 'Executive review passed' ? 'Passing' : 'Attention')}</td><td>${formatDate(employee.graduationDate)}</td><td>${employee.documents.filter((document) => ['Graduation Certificate', 'Diploma'].includes(document.name)).length}</td><td><span class="caption">Future policy</span></td></tr>`).join('')}</tbody></table></div></section>`;
 }
 
+function trainingView() {
+  const records = state.data.employees.flatMap((employee) => employee.trainingHistory.map((course) => ({ ...course, employee })));
+  return `${header('Governance', 'Training Center', 'Track learning records, course outcomes, and readiness for the next lifecycle gate.')}
+    <div class="grid metrics-grid">${metric('Employees in training', state.data.portal.training, 'Current lifecycle state')}${metric('Courses completed', records.filter((record) => record.result === 'Passed').length, 'Passed learning records')}${metric('Learning records', records.length, 'Canonical training history')}${metric('Certification readiness', `${state.data.portal.certified}/${state.data.portal.total}`, 'Certified employees')}</div>
+    <section class="panel">${panelHead('Learning history', 'Every course is owned by Learning and linked to evidence')}<div class="table-wrap"><table class="table"><thead><tr><th>Employee</th><th>Course</th><th>Result</th><th>Date</th><th>Next gate</th></tr></thead><tbody>${records.map((record) => `<tr><td>${employeeCell(record.employee)}</td><td>${esc(record.name)}</td><td>${badge(record.result)}</td><td>${formatDate(record.date)}</td><td>${record.result === 'Passed' ? 'Certification review' : 'Manager review'}</td></tr>`).join('') || '<tr><td colspan="5"><div class="empty">No training records.</div></td></tr>'}</tbody></table></div></section>`;
+}
+
 function promotionsView() {
   const promotions = state.data.employees.flatMap((employee) => employee.timeline.filter((event) => event.type === 'Promotion').map((event) => ({ ...event, employee })));
   return `${header('Governance', 'Promotion Center', 'Manage role scope, authority, reporting, and recognition changes.')}
@@ -148,7 +155,7 @@ function settingsView() {
 }
 
 function render() {
-  const views = { dashboard, employees: employeesView, missions: missionsView, certifications: certificationsView, promotions: promotionsView, 'hall-of-fame': hallView, factory: factoryView, create: createView, audit: auditView, settings: settingsView };
+  const views = { dashboard, ecosystem: ecosystemView, workforce: workforceView, employees: employeesView, missions: missionsView, certifications: certificationsView, training: trainingView, promotions: promotionsView, 'hall-of-fame': hallView, factory: factoryView, create: createView, audit: auditView, analytics: analyticsView, knowledge: knowledgeView, settings: settingsView };
   if (state.view === 'employee') $('#main').innerHTML = profileView(state.selected);
   else $('#main').innerHTML = (views[state.view] || dashboard)();
   document.querySelectorAll('.nav-item').forEach((button) => button.classList.toggle('active', button.dataset.view === state.view || (state.view === 'employee' && button.dataset.view === 'employees')));
@@ -157,7 +164,7 @@ function render() {
 
 async function refresh() { state.data = await request('/api/bootstrap'); $('#user-label').textContent = `${state.data.user.name} · ${state.data.user.role}`; routeFromHash(); render(); }
 function go(view) { state.view = view; if (view !== 'employee') state.selected = null; window.location.hash = view === 'employee' && state.selected ? `employee/${state.selected.employeeId}` : view; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-function routeFromHash() { const [view, employeeId] = window.location.hash.replace(/^#/, '').split('/'); if (view === 'employee' && employeeId && state.data) { state.selected = state.data.employees.find((employee) => employee.employeeId === employeeId) || null; state.view = 'employee'; } else if (view && ['dashboard', 'employees', 'missions', 'certifications', 'promotions', 'hall-of-fame', 'factory', 'create', 'audit', 'settings'].includes(view)) { state.view = view; state.selected = null; } }
+function routeFromHash() { const [view, employeeId] = window.location.hash.replace(/^#/, '').split('/'); if (view === 'employee' && employeeId && state.data) { state.selected = state.data.employees.find((employee) => employee.employeeId === employeeId) || null; state.view = 'employee'; } else if (view && ['dashboard', 'ecosystem', 'workforce', 'employees', 'missions', 'certifications', 'training', 'promotions', 'hall-of-fame', 'factory', 'create', 'audit', 'analytics', 'knowledge', 'settings'].includes(view)) { state.view = view; state.selected = null; } }
 
 function bindViewActions() {
   document.querySelectorAll('[data-view]').forEach((element) => element.addEventListener('click', () => go(element.dataset.view)));

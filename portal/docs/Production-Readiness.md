@@ -2,7 +2,7 @@
 
 ## Complete
 
-Canonical model, route inventory, executive dashboard, employee registry, employee profile, timeline, mission, certification, promotion, Hall of Fame, factory, automation, audit, settings, API contract, responsive design, and reusable component structure.
+Canonical model, route inventory, unified ecosystem dashboard, workforce view, employee registry, employee profile, timeline, mission, training, certification, promotion, Hall of Fame, factory, automation, audit, analytics, Knowledge Vault, settings, API contract, responsive design, and reusable component structure.
 
 ## Required Before Production Deployment
 

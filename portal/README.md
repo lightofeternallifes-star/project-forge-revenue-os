@@ -2,7 +2,7 @@
 
 The Digital Employee Portal is the executive management surface for Carriersfy AI Digital Employees. It is the single interface for viewing, creating, training, certifying, promoting, auditing, deploying, monitoring, and archiving employees.
 
-The portal consumes the Digital Employee Factory through provider-agnostic service contracts. It does not recreate templates, lifecycle rules, branding logic, or registry rules.
+The portal consumes Revenue OS, PROJECT PHOENIX, Knowledge Vault, and the Digital Employee Factory through provider-agnostic service contracts. It does not recreate templates, lifecycle rules, branding logic, or registry rules.
 
 ## Runtime
 
@@ -10,4 +10,4 @@ The current portal is implemented as a dependency-free browser application serve
 
 ## Navigation
 
-Dashboard, Employee Registry, Missions, Certifications, Promotions, Hall of Fame, Factory, Audit, and Settings are route-level views over one canonical employee model.
+Dashboard, Ecosystem, Workforce, Employee Registry, Missions, Training, Certifications, Promotions, Hall of Fame, Factory, Audit, Analytics, Knowledge Vault, and Settings are route-level views over one canonical employee model.
