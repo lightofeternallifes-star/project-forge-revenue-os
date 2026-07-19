@@ -14,6 +14,10 @@ import { executionDashboard } from './execution-dashboard.mjs';
 import { executeWithEmployeeAdapter } from './execution-adapter.mjs';
 import { buildMissionReport, writeMissionEvidencePackage } from './mission-reporter.mjs';
 import { deployAtlas } from './atlas-deployment.mjs';
+import { validateWorkContractInput, createWorkContract } from './work-contract-domain.mjs';
+import { assignContract, reviewContract } from './work-contract-engine.mjs';
+import { workContractDashboard } from './work-contract-dashboard.mjs';
+import { deployFirstWorkContract } from './work-contract-deployment.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
@@ -62,12 +66,15 @@ async function api(req, res, url) {
   }
   const user = requireAuth(req, res);
   if (!user) return;
-  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees.map(withCredentials), missions: store.missions, execution: executionDashboard(store.missions, store.employees, store.automationJobs, { modules: ecosystemModules }), portal: portalMetrics(store.employees, store.automationJobs, store.audits), ecosystem: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, audits: store.audits });
+  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees.map(withCredentials), missions: store.missions, contracts: store.contracts, execution: executionDashboard(store.missions, store.employees, store.automationJobs, { modules: ecosystemModules }), contractsDashboard: workContractDashboard(store.contracts, store.employees), portal: portalMetrics(store.employees, store.automationJobs, store.audits), ecosystem: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, audits: store.audits });
   if (req.method === 'GET' && url.pathname === '/api/ecosystem') return json(res, 200, { data: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/workforce') return json(res, 200, { data: { employees: store.employees, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/knowledge') return json(res, 200, { data: { records: store.employees.flatMap((employee) => employee.knowledgeProfile.domains.map((domain) => ({ domain, owner: employee.employeeName, usage: employee.evidence.length, status: 'Canonical' }))), metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/revenue') return json(res, 200, { data: { contributions: store.employees.map((employee) => ({ employeeNumber: employee.employeeNumber, employeeName: employee.employeeName, revenueGenerated: employee.revenueGenerated, missionCount: employee.missionHistory.length })), metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/execution/dashboard') return json(res, 200, { data: executionDashboard(store.missions, store.employees, store.automationJobs, { modules: ecosystemModules }), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/contracts/dashboard') return json(res, 200, { data: workContractDashboard(store.contracts, store.employees), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/contracts') { const status = url.searchParams.get('status'); const priority = url.searchParams.get('priority'); const contracts = store.contracts.filter((contract) => (!status || contract.status === status) && (!priority || contract.priority === priority)); return json(res, 200, { data: contracts, meta: { total: contracts.length }, errors: [] }); }
+  if (req.method === 'POST' && url.pathname === '/api/contracts') { const result = validateWorkContractInput(await body(req), store.employees); if (!result.ok) return json(res, 400, { error: result.error }); const contract = createWorkContract(result.input, result.input.contractId || ('contract-' + store.createId()), user.name); store.contracts.unshift(contract); return json(res, 201, { data: contract, errors: [] }); }
   if (req.method === 'GET' && url.pathname === '/api/employees') {
     const search = String(url.searchParams.get('search') || '').toLowerCase();
     const status = url.searchParams.get('status');
@@ -111,6 +118,13 @@ async function api(req, res, url) {
     store.dispatchLog.push({ missionId: mission.id, action: 'Created', at: mission.createdAt, actor: user.name });
     return json(res, 201, { data: mission, errors: [] });
   }
+  const contractMatch = url.pathname.match(/^\/api\/contracts\/([^/]+)$/);
+  const contractActionMatch = url.pathname.match(/^\/api\/contracts\/([^/]+)\/(assign|review|cancel)$/);
+  const contractId = contractMatch?.[1] || contractActionMatch?.[1];
+  const contract = contractId ? store.contracts.find((item) => item.contractId === contractId || item.id === contractId) : null;
+  if (contractId && !contract) return json(res, 404, { error: 'Contract not found.' });
+  if (req.method === 'GET' && contractMatch) return json(res, 200, { data: contract, errors: [] });
+  if (req.method === 'POST' && contractActionMatch) { const input = await body(req); let result; if (contractActionMatch[2] === 'assign') result = assignContract(contract, store.employees, user.name, input.employeeId || null); if (contractActionMatch[2] === 'review') result = reviewContract(contract, input.decision, user.name, input.comments || input.reason || ''); if (contractActionMatch[2] === 'cancel') result = reviewContract(contract, 'Cancelled', user.name, input.reason || 'Contract cancelled by executive command.'); if (!result?.ok) return json(res, 400, { error: result?.error || 'Contract action failed.' }); return json(res, 200, { data: contract, errors: [] }); }
   const missionMatch = url.pathname.match(/^\/api\/missions\/([^/]+)$/);
   const missionActionMatch = url.pathname.match(/^\/api\/missions\/([^/]+)\/(assign|accept|reject|start|pause|resume|complete|cancel|archive|evidence|report|review|timeline)$/);
   const missionId = missionMatch?.[1] || missionActionMatch?.[1];
@@ -208,4 +222,4 @@ async function serve(req, res) {
   } catch { json(res, 404, { error: 'Not found.' }); }
 }
 
-createServer(serve).listen(port, host, () => { console.log(`Digital Employee Portal running at http://localhost:${port}`); deployAtlas(store, root).then((mission) => console.log(`Atlas deployment ${mission.id}: ${mission.state}`)).catch((error) => console.error(`Atlas deployment failed: ${error.message}`)); });
+createServer(serve).listen(port, host, () => { console.log(`Digital Employee Portal running at http://localhost:${port}`); deployAtlas(store, root).then((mission) => { console.log(`Atlas deployment ${mission.id}: ${mission.state}`); return deployFirstWorkContract(store, root); }).then((contract) => console.log(`Work contract ${contract.contractId}: ${contract.status}`)).catch((error) => console.error(`Deployment failed: ${error.message}`)); });

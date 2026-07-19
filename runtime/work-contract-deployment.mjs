@@ -1,0 +1,43 @@
+import { createMission, validateMissionInput } from './mission-domain.mjs';
+import { completeMission, executeMission, loadEmployeeKnowledge, transitionMission } from './execution-engine.mjs';
+import { executeWithEmployeeAdapter } from './execution-adapter.mjs';
+import { buildMissionReport, writeMissionEvidencePackage } from './mission-reporter.mjs';
+import { assignContract, reviewContract, syncContractFromMission, transitionContract } from './work-contract-engine.mjs';
+import { createWorkContract, validateWorkContractInput } from './work-contract-domain.mjs';
+import { writeWorkContractPackage } from './work-contract-reporter.mjs';
+
+export async function deployFirstWorkContract(store, root) {
+  const existing = store.contracts.find((contract) => contract.deploymentKey === 'MISSION-016-FIRST-INTERNAL-CONTRACT');
+  if (existing) return existing;
+  const result = validateWorkContractInput({ contractId: 'contract-016-atlas-repository-health', client: 'Carriersfy AI', project: 'PROJECT FORGE Internal Operations', businessObjective: 'Validate repository operational readiness and preserve evidence for executive action.', expectedDeliverable: 'Evidence-backed repository health report.', priority: 'High', requiredSkills: ['Knowledge governance', 'Evidence quality', 'Repository analysis'], reviewer: 'Executive User', dueDate: new Date(Date.now() + 86400000).toISOString(), successCriteria: 'Repository is inspected read-only and findings are traceable to generated evidence.', evidenceRequired: true, completionRequirements: 'Mission completed, evidence stored, report generated, supervisor approval recorded.', roiTarget: 0, missionTemplate: 'Repository Health' }, store.employees);
+  if (!result.ok) throw new Error(result.error);
+  const contract = createWorkContract(result.input, result.input.contractId, 'Executive Office');
+  contract.deploymentKey = 'MISSION-016-FIRST-INTERNAL-CONTRACT';
+  store.contracts.unshift(contract);
+  const assignment = assignContract(contract, store.employees, 'Executive Queue', 'employee-001');
+  if (!assignment.ok) throw new Error(assignment.error);
+  const employee = store.employees.find((item) => item.employeeId === contract.assignedEmployeeId);
+  const missionResult = validateMissionInput({ title: 'Mission 016: Repository Health Contract', type: 'Repository Health', objective: contract.businessObjective, employeeId: employee.employeeId, dueDate: contract.dueDate, revenueImpact: 0, hoursSaved: 0, customerImpact: 'Internal operating readiness', reusableKnowledge: 'Contract-based work routing and evidence-backed repository health.', recommendedImprovements: 'Use supervisor review outcomes to tune assignment and SLA policies.' }, store.employees);
+  if (!missionResult.ok) throw new Error(missionResult.error);
+  const mission = createMission(missionResult.input, 'mission-016-atlas-contract', 'Work Contract Engine');
+  mission.contractId = contract.contractId;
+  store.missions.unshift(mission);
+  transitionMission(mission, 'Assigned', 'Work Contract Engine', 'Contract assignment dispatched to Atlas Analyst.');
+  transitionContract(contract, 'In Progress', 'Execution Engine', 'Assigned contract entered execution after dispatcher handoff.');
+  transitionMission(mission, 'Preparing', employee.employeeName, 'Atlas accepted the contracted work.');
+  loadEmployeeKnowledge(mission, employee, employee.employeeName);
+  transitionMission(mission, 'Knowledge Loaded', employee.employeeName, 'Contract knowledge loaded.');
+  transitionMission(mission, 'Executing', employee.employeeName, 'Atlas began contracted repository analysis.');
+  await executeMission(mission, employee, employee.employeeName, (currentMission, currentEmployee) => executeWithEmployeeAdapter(currentMission, currentEmployee, root));
+  const completed = completeMission(mission, employee, employee.employeeName);
+  if (!completed.ok) throw new Error(completed.error);
+  mission.report = buildMissionReport(mission);
+  mission.reportArtifact = await writeMissionEvidencePackage(mission, root);
+  syncContractFromMission(contract, mission);
+  reviewContract(contract, 'Approved', 'Executive User', 'Evidence, report, success criteria, and completion requirements verified.');
+  transitionContract(contract, 'Archived', 'Executive User', 'Approved contract archived as a permanent operational record.');
+  contract.reportArtifact = await writeWorkContractPackage(contract, root);
+  store.dispatchLog.push({ contractId: contract.contractId, missionId: mission.id, action: 'Automatic contract execution and approval', at: new Date().toISOString(), actor: 'Work Contract Engine' });
+  store.contractLogs.push({ contractId: contract.contractId, action: 'Closed', at: new Date().toISOString(), actor: 'Executive User' });
+  return contract;
+}

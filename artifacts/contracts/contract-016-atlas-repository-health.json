@@ -1,0 +1,115 @@
+{
+  "id": "contract-016-atlas-repository-health",
+  "contractId": "contract-016-atlas-repository-health",
+  "client": "Carriersfy AI",
+  "project": "PROJECT FORGE Internal Operations",
+  "businessObjective": "Validate repository operational readiness and preserve evidence for executive action.",
+  "expectedDeliverable": "Evidence-backed repository health report.",
+  "priority": "High",
+  "requiredSkills": [
+    "Knowledge governance",
+    "Evidence quality",
+    "Repository analysis"
+  ],
+  "assignedEmployeeId": "employee-001",
+  "reviewer": "Executive User",
+  "dueDate": "2026-07-20T14:28:59.823Z",
+  "successCriteria": "Repository is inspected read-only and findings are traceable to generated evidence.",
+  "evidenceRequired": true,
+  "completionRequirements": "Mission completed, evidence stored, report generated, supervisor approval recorded.",
+  "roiTarget": 0,
+  "missionTemplate": "Repository Health",
+  "status": "Archived",
+  "createdAt": "2026-07-19T14:28:59.824Z",
+  "updatedAt": "2026-07-19T14:28:59.829Z",
+  "assignedAt": "2026-07-19T14:28:59.825Z",
+  "startedAt": "2026-07-19T14:28:59.825Z",
+  "completedAt": null,
+  "approvedAt": "2026-07-19T14:28:59.829Z",
+  "archivedAt": "2026-07-19T14:28:59.829Z",
+  "missionId": "mission-016-atlas-contract",
+  "evidence": [
+    {
+      "id": "mission-016-atlas-contract-evidence-1",
+      "label": "Execution output",
+      "source": "execution-engine"
+    },
+    {
+      "id": "mission-016-atlas-contract-evidence-2",
+      "label": "Knowledge feedback",
+      "source": "knowledge-feedback-loop"
+    }
+  ],
+  "approval": {
+    "status": "Approved",
+    "reviewer": "Executive User",
+    "comments": "Evidence, report, success criteria, and completion requirements verified.",
+    "decidedAt": "2026-07-19T14:28:59.829Z"
+  },
+  "sla": {
+    "dueDate": "2026-07-20T14:28:59.823Z",
+    "status": "On track",
+    "escalatedAt": null
+  },
+  "metrics": {
+    "hoursWorked": 0,
+    "durationMinutes": 0,
+    "successRate": 100,
+    "evidenceQuality": 100,
+    "knowledgeCreated": 1,
+    "revenueContribution": 0,
+    "customerSatisfaction": null,
+    "promotionScore": 100
+  },
+  "logs": [
+    {
+      "status": "Open",
+      "at": "2026-07-19T14:28:59.824Z",
+      "actor": "Executive Office",
+      "comment": "Work contract created by executive command."
+    },
+    {
+      "status": "Assigned",
+      "at": "2026-07-19T14:28:59.825Z",
+      "actor": "Executive Queue",
+      "comment": "Contract assigned to ATLAS ANALYST™."
+    },
+    {
+      "status": "In Progress",
+      "at": "2026-07-19T14:28:59.825Z",
+      "actor": "Execution Engine",
+      "comment": "Assigned contract entered execution after dispatcher handoff."
+    },
+    {
+      "status": "Waiting Review",
+      "at": "2026-07-19T14:28:59.829Z",
+      "actor": "Execution Engine",
+      "comment": "Mission completed; contract is waiting for supervisor review."
+    },
+    {
+      "status": "Approved",
+      "at": "2026-07-19T14:28:59.829Z",
+      "actor": "Executive User",
+      "comment": "Evidence, report, success criteria, and completion requirements verified."
+    },
+    {
+      "status": "Archived",
+      "at": "2026-07-19T14:28:59.829Z",
+      "actor": "Executive User",
+      "comment": "Approved contract archived as a permanent operational record."
+    }
+  ],
+  "deploymentKey": "MISSION-016-FIRST-INTERNAL-CONTRACT",
+  "assignment": {
+    "employeeId": "employee-001",
+    "employeeName": "ATLAS ANALYST™",
+    "score": 999,
+    "matchedSkills": [
+      "Knowledge governance",
+      "Evidence quality",
+      "Repository analysis"
+    ],
+    "assignedAt": "2026-07-19T14:28:59.825Z",
+    "policy": "Executive override"
+  }
+}
