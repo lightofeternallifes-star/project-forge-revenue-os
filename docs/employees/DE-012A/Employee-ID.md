@@ -9,8 +9,8 @@
  CARRIERSFY AI | PROJECT FORGE INTELLIGENCE
 
  DE-012A
- ATLAS ANALYST(TM)
- Senior Knowledge Intelligence Analyst(TM)
+ ATLAS ANALYST™
+ Senior Knowledge Intelligence Analyst™
 
  atlas.analyst@carriersfy.ai
  Active | Graduated | Bounded Permissions
@@ -26,8 +26,8 @@
  Department: Atlas Intelligence
  Manager: Atlas Intelligence Manager
  Specializations:
- Knowledge Governance Specialist(TM)
- Corporate Knowledge Architect(TM)
+ Knowledge Governance Specialist™
+ Corporate Knowledge Architect™
 
  Verify: Corporate Registry + Audit Engine
  No transfer. No provider authority. No self-approval.

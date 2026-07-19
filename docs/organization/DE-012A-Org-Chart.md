@@ -5,10 +5,10 @@ Carriersfy AI CEO
 └── Chief Knowledge and Intelligence Officer
     └── Atlas Intelligence Director
         └── Atlas Intelligence Manager
-            └── DE-012A ATLAS ANALYST(TM)
-                Senior Knowledge Intelligence Analyst(TM)
-                Knowledge Governance Specialist(TM)
-                Corporate Knowledge Architect(TM)
+            └── DE-012A ATLAS ANALYST™
+                Senior Knowledge Intelligence Analyst™
+                Knowledge Governance Specialist™
+                Corporate Knowledge Architect™
 ```
 
 **Primary accountability:** Atlas Intelligence

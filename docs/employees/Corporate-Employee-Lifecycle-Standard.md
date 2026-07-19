@@ -35,6 +35,10 @@ Requisition requires department and executive approval. Training completion requ
 
 Every future Digital Employee inherits DE-012A’s record categories, evidence obligations, mission-history format, certification gate, promotion record, and permanent registry pattern. A future employee may add domain-specific records but may not remove the baseline lifecycle.
 
+## Brand Compliance
+
+All employee records use the canonical Carriersfy AI branding policy in `branding/canonical/`. Documents reference the official corporate logo and approved brand values from the canonical source of truth. No employee package may redraw, replace, duplicate, or invent corporate branding assets.
+
 ## Control Rules
 
 - A Digital Employee cannot approve its own training, promotion, exception, or retirement.
