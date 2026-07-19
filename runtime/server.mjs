@@ -11,7 +11,7 @@ import { credentialLinks } from '../credentials/engine.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
-const credentialsDir = join(root, 'credentials', 'generated');
+const credentialsDir = join(root, 'credentials');
 const port = Number(process.env.PORT || 3000);
 const host = process.env.HOST || '127.0.0.1';
 const store = createStore();
