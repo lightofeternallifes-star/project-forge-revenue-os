@@ -44,6 +44,8 @@ export function createStore() {
     performanceMetrics: [],
     missionQueues: [],
     notifications: [],
+    onboardingSessions: [],
+    emailOutbox: [],
     contractLogs: contractStore.contractLogs,
     createId: () => randomUUID()
   };

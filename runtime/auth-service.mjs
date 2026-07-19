@@ -42,7 +42,7 @@ export async function createAuthService(store, root) {
       if (!email || !String(input.name || '').trim()) throw new Error('Name and email are required.');
       assertRole(input.role);
       if (store.users.some((user) => user.email === email)) throw new Error('Email is already registered.');
-      const user = createUser(input, randomUUID(), await hashPassword(input.password), organizationId);
+      const user = createUser(input, randomUUID(), input.passwordHash || await hashPassword(input.password), organizationId);
       store.users.push(user);
       await persist();
       return publicUser(user);

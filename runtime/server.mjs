@@ -26,6 +26,7 @@ import { executiveDashboard } from './dashboard-service.mjs';
 import { createPlatformApi } from './platform-api.mjs';
 import { hydrateStore, createStorePersistence } from './store-persistence.mjs';
 import { provisionOrganization } from './provisioning-service.mjs';
+import { createOnboardingService } from './onboarding-service.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
@@ -37,6 +38,7 @@ const persistStore = createStorePersistence(store, root);
 const auth = await createAuthService(store, root);
 const knowledgeRepository = createKnowledgeRepository(store);
 const platformApi = createPlatformApi(store, auth);
+const onboarding = createOnboardingService(store, auth);
 const withCredentials = (employee) => ({ ...employee, credentialLinks: credentialLinks(employee.employeeNumber) });
 
 const json = (res, status, body, headers = {}) => {
@@ -65,6 +67,30 @@ async function api(req, res, url) {
     const authenticated = await auth.authenticate(input?.email, input?.password);
     if (!authenticated) return json(res, 401, { error: 'Invalid credentials.' });
     return json(res, 200, { user: authenticated.user }, { 'set-cookie': 'forge_session=' + authenticated.token + '; HttpOnly; SameSite=Lax; Path=/; Max-Age=28800' });
+  }
+  if (req.method === 'POST' && url.pathname === '/api/onboarding/trial') {
+    try { return json(res, 201, { data: await onboarding.createTrial(await body(req)), errors: [] }); } catch (error) { return json(res, 400, { error: error.message }); }
+  }
+  const onboardingMatch = url.pathname.match(/^\/api\/onboarding\/([^/]+)\/(industry|plan|payment)$/);
+  const onboardingGet = url.pathname.match(/^\/api\/onboarding\/([^/]+)$/);
+  if (req.method === 'GET' && onboardingGet) {
+    const session = onboarding.get(onboardingGet[1]);
+    return session ? json(res, 200, { data: session, errors: [] }) : json(res, 404, { error: 'Onboarding session not found.' });
+  }
+  if (req.method === 'POST' && onboardingMatch) {
+    const input = await body(req);
+    if (onboardingMatch[2] === 'payment') {
+      if (!process.env.FORGE_PAYMENT_WEBHOOK_KEY || req.headers['x-forge-payment-key'] !== process.env.FORGE_PAYMENT_WEBHOOK_KEY) return json(res, 403, { error: 'Verified payment event required.' });
+      input.verified = true;
+    }
+    try {
+      const result = onboardingMatch[2] === 'industry'
+        ? onboarding.selectIndustry(onboardingMatch[1], input.industry)
+        : onboardingMatch[2] === 'plan'
+          ? onboarding.selectPlan(onboardingMatch[1], input.plan)
+          : await onboarding.recordVerifiedPayment(onboardingMatch[1], input);
+      return result ? json(res, 200, { data: result, errors: [] }) : json(res, 404, { error: 'Onboarding session not found.' });
+    } catch (error) { return json(res, 400, { error: error.message }); }
   }
   if (req.method === 'POST' && url.pathname === '/api/platform/provision') {
     if (!process.env.FORGE_PROVISIONING_KEY || req.headers['x-forge-provisioning-key'] !== process.env.FORGE_PROVISIONING_KEY) return json(res, 403, { error: 'Provisioning authorization required.' });

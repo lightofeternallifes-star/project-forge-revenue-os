@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const fileName = 'data/runtime.json';
-const collections = ['platform', 'organizations', 'employees', 'missions', 'contracts', 'opportunities', 'timeline', 'audits', 'automationJobs', 'dispatchLog', 'executionLogs', 'contractLogs', 'knowledgeRecords', 'evidenceRecords', 'performanceMetrics', 'missionQueues', 'settings'];
+const collections = ['platform', 'organizations', 'employees', 'missions', 'contracts', 'opportunities', 'timeline', 'audits', 'automationJobs', 'dispatchLog', 'executionLogs', 'contractLogs', 'knowledgeRecords', 'evidenceRecords', 'performanceMetrics', 'missionQueues', 'notifications', 'onboardingSessions', 'emailOutbox', 'settings'];
 
 export async function hydrateStore(store, root) {
   try {
