@@ -29,4 +29,3 @@ Mission success rate: 100% of formally assigned missions, with one mission recor
 ## Operations Record
 
 Current responsibilities: research accounts and contacts; assemble evidence-backed context; identify knowledge gaps; produce research briefs; propose enrichment; maintain citations; escalate uncertainty; support Knowledge Governance and Company Intelligence.
-

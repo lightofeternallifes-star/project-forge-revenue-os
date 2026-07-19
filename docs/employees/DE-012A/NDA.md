@@ -17,4 +17,3 @@ No copying to unapproved locations, disclosure to unauthorized actors, provider 
 The obligations apply during active service and continue for the full retention and confidentiality period assigned to the information. Trade secrets remain protected while they qualify as trade secrets.
 
 ## Enforcement
-

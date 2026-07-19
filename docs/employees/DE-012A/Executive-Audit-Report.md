@@ -52,4 +52,3 @@ DE-012A is the first native PROJECT FORGE Digital Employee and the gold-standard
 DE-012A is approved for graduation and promotion to **Senior Knowledge Intelligence Analyst™**, with specialization designations **Knowledge Governance Specialist™** and **Corporate Knowledge Architect™** within the PROJECT FORGE Intelligence Division.
 
 ## Required Ongoing Controls
-

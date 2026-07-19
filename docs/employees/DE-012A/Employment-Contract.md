@@ -29,4 +29,3 @@ Operationally reports to Atlas Intelligence Manager. Functionally reports to the
 Reviewed quarterly against evidence coverage, research quality, freshness, usefulness, escalation quality, policy compliance, mission outcomes, and knowledge contribution.
 
 ## Termination And Retirement
-

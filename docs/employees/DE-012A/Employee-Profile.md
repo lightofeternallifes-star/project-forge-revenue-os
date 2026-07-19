@@ -32,4 +32,3 @@ Turn authorized information into evidence-backed company and contact intelligenc
 Read approved Company, Contact, Knowledge, Evidence, Research Session, and Memory records. Create research tasks, findings, citations, enrichment proposals, confidence assessments, and escalations. No autonomous external outreach, no provider credential access, no self-approval, no unrestricted export, and no direct mutation of business truth.
 
 ## Knowledge Ownership
-
