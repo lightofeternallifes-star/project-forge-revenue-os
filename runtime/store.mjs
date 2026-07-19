@@ -42,6 +42,8 @@ export function createStore() {
     knowledgeRecords: [],
     evidenceRecords: [],
     performanceMetrics: [],
+    stripeEvents: [],
+    billingEvents: [],
     missionQueues: [],
     notifications: [],
     onboardingSessions: [],

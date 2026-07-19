@@ -27,6 +27,7 @@ import { createPlatformApi } from './platform-api.mjs';
 import { hydrateStore, createStorePersistence } from './store-persistence.mjs';
 import { provisionOrganization } from './provisioning-service.mjs';
 import { createOnboardingService } from './onboarding-service.mjs';
+import { createCheckoutSession, verifyStripeSignature } from './stripe-commerce.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
@@ -54,6 +55,12 @@ async function body(req) {
   try { return raw ? JSON.parse(raw) : {}; } catch { return null; }
 }
 
+async function rawBody(req) {
+  let raw = '';
+  for await (const chunk of req) raw += chunk;
+  return raw;
+}
+
 function sessionUser(req) { return auth.userFromRequest(req); }
 
 function requireAuth(req, res) { const user = sessionUser(req); if (!user) { json(res, 401, { error: "Authentication required." }); return null; } return user; }
@@ -70,6 +77,38 @@ async function api(req, res, url) {
   }
   if (req.method === 'POST' && url.pathname === '/api/onboarding/trial') {
     try { return json(res, 201, { data: await onboarding.createTrial(await body(req)), errors: [] }); } catch (error) { return json(res, 400, { error: error.message }); }
+  }
+  if (req.method === 'POST' && url.pathname === '/api/commerce/checkout') {
+    const input = await body(req);
+    const session = onboarding.get(input?.onboardingId);
+    if (!session) return json(res, 404, { error: 'Onboarding session not found.' });
+    if (!session.plan) return json(res, 400, { error: 'Select a plan before checkout.' });
+    if (process.env.FORGE_COMMERCE_KEY && req.headers['x-forge-commerce-key'] !== process.env.FORGE_COMMERCE_KEY) return json(res, 403, { error: 'Commerce authorization required.' });
+    try { return json(res, 201, { data: await createCheckoutSession(session, process.env), errors: [] }); } catch (error) { return json(res, 503, { error: error.message }); }
+  }
+  if (req.method === 'POST' && url.pathname === '/api/stripe/webhook') {
+    const payload = await rawBody(req);
+    if (!verifyStripeSignature(payload, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET)) return json(res, 400, { error: 'Invalid Stripe signature.' });
+    let event;
+    try { event = JSON.parse(payload); } catch { return json(res, 400, { error: 'Invalid Stripe event.' }); }
+    if (store.stripeEvents.some((item) => item.id === event.id && item.status === 'completed')) return json(res, 200, { received: true, duplicate: true });
+    const record = { id: event.id, type: event.type, status: 'received', receivedAt: new Date().toISOString() };
+    store.stripeEvents.push(record);
+    try {
+      if (event.type === 'checkout.session.completed') {
+        const checkout = event.data?.object || {};
+        const onboardingId = checkout.metadata?.onboarding_id || checkout.client_reference_id;
+        if (!onboardingId) throw new Error('Stripe checkout is missing onboarding metadata.');
+        await onboarding.recordVerifiedPayment(onboardingId, { provider: 'stripe', status: checkout.payment_status === 'paid' || checkout.status === 'complete' ? 'approved' : 'pending', providerEventId: event.id, verified: true });
+      } else if (['invoice.paid', 'invoice.payment_failed', 'customer.subscription.deleted', 'customer.subscription.updated'].includes(event.type)) {
+        store.billingEvents.push({ id: event.id, type: event.type, objectId: event.data?.object?.id || null, receivedAt: new Date().toISOString() });
+      }
+      record.status = 'completed';
+      return json(res, 200, { received: true });
+    } catch (error) {
+      record.status = 'failed'; record.error = error.message;
+      return json(res, 500, { error: 'Stripe event processing failed.' });
+    }
   }
   const onboardingMatch = url.pathname.match(/^\/api\/onboarding\/([^/]+)\/(industry|plan|payment)$/);
   const onboardingGet = url.pathname.match(/^\/api\/onboarding\/([^/]+)$/);
