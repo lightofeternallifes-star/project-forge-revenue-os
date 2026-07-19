@@ -11,6 +11,9 @@ import { credentialLinks } from '../credentials/engine.mjs';
 import { missionStates, missionTypes, createMission, validateMissionInput } from './mission-domain.mjs';
 import { attachEvidence, completeMission, executeMission, loadEmployeeKnowledge, requestHumanReview, transitionMission } from './execution-engine.mjs';
 import { executionDashboard } from './execution-dashboard.mjs';
+import { executeWithEmployeeAdapter } from './execution-adapter.mjs';
+import { buildMissionReport, writeMissionEvidencePackage } from './mission-reporter.mjs';
+import { deployAtlas } from './atlas-deployment.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
@@ -124,13 +127,13 @@ async function api(req, res, url) {
     if (action === 'assign') { mission.employeeId = employee.employeeId; result = transitionMission(mission, 'Assigned', user.name, `Mission assigned to ${employee.employeeName}.`); }
     if (action === 'accept') { result = transitionMission(mission, 'Preparing', employee.employeeName, 'Employee accepted the mission.'); if (result.ok) { loadEmployeeKnowledge(mission, employee, employee.employeeName); result = transitionMission(mission, 'Knowledge Loaded', employee.employeeName, 'Employee knowledge loaded for execution.'); } }
     if (action === 'reject' || action === 'cancel') result = transitionMission(mission, 'Cancelled', employee?.employeeName || user.name, input.reason || 'Mission cancelled by authorized actor.');
-    if (action === 'start') { if (mission.state === 'Assigned') { result = transitionMission(mission, 'Preparing', employee.employeeName, 'Dispatcher opened preparation.'); if (result.ok) { loadEmployeeKnowledge(mission, employee, employee.employeeName); result = transitionMission(mission, 'Knowledge Loaded', employee.employeeName, 'Knowledge loaded by dispatcher.'); } } if (result?.ok !== false && mission.state === 'Knowledge Loaded') result = transitionMission(mission, 'Executing', employee.employeeName, 'Employee began execution.'); if (result?.ok !== false && mission.state === 'Executing') result = executeMission(mission, employee, employee.employeeName); }
+    if (action === 'start') { if (mission.state === 'Assigned') { result = transitionMission(mission, 'Preparing', employee.employeeName, 'Dispatcher opened preparation.'); if (result.ok) { loadEmployeeKnowledge(mission, employee, employee.employeeName); result = transitionMission(mission, 'Knowledge Loaded', employee.employeeName, 'Knowledge loaded by dispatcher.'); } } if (result?.ok !== false && mission.state === 'Knowledge Loaded') result = transitionMission(mission, 'Executing', employee.employeeName, 'Employee began execution.'); if (result?.ok !== false && mission.state === 'Executing') result = await executeMission(mission, employee, employee.employeeName, (currentMission, currentEmployee) => executeWithEmployeeAdapter(currentMission, currentEmployee, root)); }
     if (action === 'pause') result = transitionMission(mission, 'Waiting', employee.employeeName, input.reason || 'Employee paused execution.');
     if (action === 'resume') result = transitionMission(mission, 'Executing', employee.employeeName, 'Employee resumed execution.');
     if (action === 'complete') result = completeMission(mission, employee, employee.employeeName);
     if (action === 'archive') result = transitionMission(mission, 'Archived', user.name, 'Mission archived after closure.');
     if (action === 'evidence') result = attachEvidence(mission, { ...input, actor: user.name });
-    if (action === 'report') { mission.report = { missionId: mission.id, generatedAt: new Date().toISOString(), state: mission.state, objective: mission.objective, execution: mission.execution, evidence: mission.evidence, performance: mission.performance, roi: mission.roi, knowledgeFeedback: mission.knowledgeFeedback, promotionEvaluation: mission.promotionEvaluation }; result = { ok: true, report: mission.report }; }
+    if (action === 'report') { mission.report = buildMissionReport(mission); if (employee?.employeeNumber === 'DE-012A') mission.reportArtifact = await writeMissionEvidencePackage(mission, root); result = { ok: true, report: mission.report }; }
     if (action === 'review') result = { ok: true, review: requestHumanReview(mission, user.name, input.reason) };
     if (!result?.ok) return json(res, 400, { error: result?.error || 'Mission action failed.' });
     if (employee) { employee.missionStatus = ['Preparing', 'Knowledge Loaded', 'Executing'].includes(mission.state) ? 'In progress' : mission.state === 'Waiting' ? 'Blocked' : mission.state === 'Completed' ? 'Completed' : 'No mission'; employee.updatedAt = new Date().toISOString(); }
@@ -205,4 +208,4 @@ async function serve(req, res) {
   } catch { json(res, 404, { error: 'Not found.' }); }
 }
 
-createServer(serve).listen(port, host, () => console.log(`Digital Employee Portal running at http://localhost:${port}`));
+createServer(serve).listen(port, host, () => { console.log(`Digital Employee Portal running at http://localhost:${port}`); deployAtlas(store, root).then((mission) => console.log(`Atlas deployment ${mission.id}: ${mission.state}`)).catch((error) => console.error(`Atlas deployment failed: ${error.message}`)); });

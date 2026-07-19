@@ -4,7 +4,7 @@ import { createMission, validateMissionInput } from '../runtime/mission-domain.m
 import { completeMission, executeMission, loadEmployeeKnowledge, transitionMission } from '../runtime/execution-engine.mjs';
 import { createEmployeeStore } from '../runtime/employee-store.mjs';
 
-test('digital employee executes a mission through evidence, performance, and knowledge feedback', () => {
+test('digital employee executes a mission through evidence, performance, and knowledge feedback', async () => {
   const employee = createEmployeeStore().employees[0];
   const startingMissionCount = employee.missionHistory.length;
   const input = validateMissionInput({ title: 'Runtime knowledge review', objective: 'Review the canonical knowledge operating model.', type: 'Knowledge', employeeId: employee.employeeId, revenueImpact: 0, hoursSaved: 2 }, [employee]);
@@ -15,12 +15,14 @@ test('digital employee executes a mission through evidence, performance, and kno
   loadEmployeeKnowledge(mission, employee, employee.employeeName);
   assert.equal(transitionMission(mission, 'Knowledge Loaded', employee.employeeName).ok, true);
   assert.equal(transitionMission(mission, 'Executing', employee.employeeName).ok, true);
-  assert.equal(executeMission(mission, employee, employee.employeeName).ok, true);
+  assert.equal((await executeMission(mission, employee, employee.employeeName)).ok, true);
   const result = completeMission(mission, employee, employee.employeeName);
   assert.equal(result.ok, true);
   assert.equal(mission.state, 'Completed');
   assert.equal(mission.evidence.length >= 2, true);
   assert.equal(Boolean(mission.knowledgeFeedback.lessonsLearned), true);
+  assert.equal(employee.knowledgeProfile.lastMissionId, mission.id);
+  assert.equal(employee.evidence.length >= 4, true);
   assert.equal(employee.missionHistory.at(-1).id, mission.id);
   assert.equal(employee.performanceMetrics.missionCount, startingMissionCount + 1);
 });

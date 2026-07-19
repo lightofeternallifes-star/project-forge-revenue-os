@@ -4,6 +4,7 @@ import { calculateRoi } from './roi-calculator.mjs';
 import { updatePerformance } from './performance-engine.mjs';
 import { createKnowledgeFeedback } from './knowledge-loop.mjs';
 import { evaluatePromotion } from './promotion-engine.mjs';
+import { recordEmployeeExperience, recordMissionTimeline } from './employee-recorders.mjs';
 
 export function transitionMission(mission, nextState, actor, comment = '') {
   if (!canTransition(mission.state, nextState)) return { ok: false, error: `Mission cannot transition from ${mission.state} to ${nextState}.` };
@@ -24,11 +25,11 @@ export function loadEmployeeKnowledge(mission, employee, actor) {
   return knowledge;
 }
 
-export function executeMission(mission, employee, actor) {
+export async function executeMission(mission, employee, actor, adapter = null) {
   const now = new Date().toISOString();
   const knowledge = mission.execution?.knowledgeLoaded;
   if (!knowledge) return { ok: false, error: 'Employee knowledge must be loaded before execution.' };
-  const output = { missionType: mission.type, objective: mission.objective, employee: employee.employeeName, knowledgeDomains: knowledge.domains, completedWork: `Executed ${mission.type.toLowerCase()} mission: ${mission.title}.`, constraints: 'Provider-agnostic local execution; no external side effects performed.', generatedAt: now };
+  const output = adapter ? await adapter(mission, employee) : { missionType: mission.type, objective: mission.objective, employee: employee.employeeName, knowledgeDomains: knowledge.domains, completedWork: `Executed ${mission.type.toLowerCase()} mission: ${mission.title}.`, constraints: 'Provider-agnostic local execution; no external side effects performed.', generatedAt: now };
   mission.execution = { ...mission.execution, output, executedAt: now, status: 'Work completed; awaiting mission closure.' };
   const evidence = createEvidence(mission, 'Execution output', JSON.stringify(output), 'execution-engine');
   mission.evidence.push(evidence);
@@ -46,8 +47,11 @@ export function completeMission(mission, employee, actor) {
   const feedback = createKnowledgeFeedback(mission, employee);
   mission.knowledgeFeedback = feedback;
   mission.evidence.push(createEvidence(mission, 'Knowledge feedback', JSON.stringify(feedback), 'knowledge-feedback-loop'));
+  employee.evidence.push(...mission.evidence.map((evidence) => ({ label: evidence.label, reference: mission.id, record: evidence.id })));
+  employee.knowledgeProfile = { ...employee.knowledgeProfile, lastMissionId: mission.id, lastUpdated: new Date().toISOString(), knowledgeRecordsAdded: Number(employee.knowledgeProfile.knowledgeRecordsAdded || 0) + 1, lastLessonsLearned: feedback.lessonsLearned };
   employee.missionHistory.push({ id: mission.id, title: mission.title, type: mission.type, status: 'Completed', score: performance.qualityScore, completedAt: mission.completedAt, evidence: mission.evidence.map((item) => item.id), lessons: feedback.lessonsLearned });
-  employee.timeline.push({ type: 'Mission Completed', date: mission.completedAt.slice(0, 10), department: employee.department, comment: `${mission.title} completed by ${employee.employeeName}.`, evidence: mission.id });
+  recordMissionTimeline(employee, mission);
+  recordEmployeeExperience(employee, mission);
   employee.missionStatus = 'Completed';
   updatePerformance(employee, mission);
   mission.promotionEvaluation = evaluatePromotion(employee);

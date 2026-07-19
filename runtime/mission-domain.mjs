@@ -1,5 +1,5 @@
 export const missionStates = ['Created', 'Assigned', 'Preparing', 'Knowledge Loaded', 'Executing', 'Waiting', 'Completed', 'Failed', 'Cancelled', 'Archived'];
-export const missionTypes = ['Research', 'Development', 'Sales', 'Marketing', 'Support', 'Knowledge', 'Operations', 'Security', 'Architecture', 'Creative', 'Finance', 'Administration'];
+export const missionTypes = ['Research', 'Development', 'Sales', 'Marketing', 'Support', 'Knowledge', 'Operations', 'Security', 'Architecture', 'Creative', 'Finance', 'Administration', 'Repository Audit', 'Documentation Audit', 'Architecture Review', 'Knowledge Classification', 'Executive Reports', 'Repository Health', 'Compliance'];
 
 export const missionTransitions = {
   Created: ['Assigned', 'Cancelled'],
