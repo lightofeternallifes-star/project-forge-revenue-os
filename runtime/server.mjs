@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { calculateKpis, generateInsights, stages, validateOpportunity } from './domain.mjs';
+import { auditEmployee, portalMetrics, validateEmployeeInput } from './employee-domain.mjs';
+import { generateFactoryDocumentReferences } from './factory-adapter.mjs';
 import { createStore } from './store.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -34,7 +36,7 @@ function requireAuth(req, res) {
 }
 
 async function api(req, res, url) {
-  if (req.method === 'GET' && url.pathname === '/api/health') return json(res, 200, { status: 'ok', product: 'PROJECT FORGE Revenue OS', phase: 'I' });
+  if (req.method === 'GET' && url.pathname === '/api/health') return json(res, 200, { status: 'ok', product: 'PROJECT FORGE Digital Employee Portal', phase: 'I' });
   if (req.method === 'POST' && url.pathname === '/api/auth/login') {
     const input = await body(req);
     const user = store.users.find((item) => item.email === input?.email && item.password === input?.password);
@@ -50,7 +52,44 @@ async function api(req, res, url) {
   }
   const user = requireAuth(req, res);
   if (!user) return;
-  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings });
+  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees, portal: portalMetrics(store.employees, store.automationJobs, store.audits), audits: store.audits });
+  if (req.method === 'GET' && url.pathname === '/api/employees') {
+    const search = String(url.searchParams.get('search') || '').toLowerCase();
+    const status = url.searchParams.get('status');
+    const department = url.searchParams.get('department');
+    const employees = store.employees.filter((employee) => (!search || [employee.employeeNumber, employee.employeeName, employee.role, employee.department, employee.manager].join(' ').toLowerCase().includes(search)) && (!status || employee.employmentStatus === status) && (!department || employee.department === department));
+    return json(res, 200, { data: employees, meta: { total: employees.length }, errors: [] });
+  }
+  const employeeMatch = url.pathname.match(/^\/api\/employees\/([^/]+)$/);
+  if (req.method === 'GET' && employeeMatch) {
+    const employee = store.employees.find((item) => item.employeeId === employeeMatch[1] || item.employeeNumber === employeeMatch[1]);
+    if (!employee) return json(res, 404, { error: 'Employee not found.' });
+    return json(res, 200, { data: employee, meta: { version: employee.version }, errors: [] });
+  }
+  if (req.method === 'POST' && url.pathname === '/api/employees') {
+    const result = validateEmployeeInput(await body(req), store.employees);
+    if (!result.ok) return json(res, 400, { error: result.error });
+    const employee = { ...result.employee, employeeId: store.createId(), hireDate: result.employee.hireDate || new Date().toISOString().slice(0, 10), version: 1, documents: generateFactoryDocumentReferences(), timeline: [{ type: 'Created', date: new Date().toISOString().slice(0, 10), department: 'Digital Employee Operations', comment: 'Portal generation request accepted.', evidence: 'factory/generators/Digital-Employee-Generator.md' }] };
+    store.employees.unshift(employee);
+    const audit = auditEmployee(employee);
+    store.audits.unshift(audit);
+    store.automationJobs.unshift({ id: store.createId(), command: 'Create Digital Employee', status: 'Queued', employeeNumber: employee.employeeNumber, updatedAt: new Date().toISOString() });
+    return json(res, 202, { data: employee, meta: { request_id: store.createId(), audit }, errors: [] });
+  }
+  if (req.method === 'GET' && url.pathname === '/api/missions') return json(res, 200, { data: store.employees.flatMap((employee) => employee.missionHistory.map((mission) => ({ ...mission, employeeNumber: employee.employeeNumber, employeeName: employee.employeeName }))), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/certifications') return json(res, 200, { data: store.employees.map((employee) => ({ employeeNumber: employee.employeeNumber, employeeName: employee.employeeName, level: employee.certificationLevel, graduationDate: employee.graduationDate, documents: employee.documents.filter((document) => ['Graduation Certificate', 'Diploma', 'Executive Audit'].includes(document.name)) })), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/promotions') return json(res, 200, { data: store.employees.flatMap((employee) => employee.timeline.filter((event) => event.type === 'Promotion').map((event) => ({ ...event, employeeNumber: employee.employeeNumber, employeeName: employee.employeeName }))), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/hall-of-fame') return json(res, 200, { data: store.employees.filter((employee) => employee.hallOfFameStatus === 'Published'), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/audits') return json(res, 200, { data: store.audits, errors: [] });
+  if (req.method === 'POST' && url.pathname === '/api/audits') {
+    const input = await body(req);
+    const employee = store.employees.find((item) => item.employeeId === input?.employeeId);
+    if (!employee) return json(res, 404, { error: 'Employee not found.' });
+    const audit = auditEmployee(employee);
+    store.audits.unshift(audit);
+    return json(res, 200, { data: audit, errors: [] });
+  }
+  if (req.method === 'GET' && url.pathname === '/api/factory/status') return json(res, 200, { data: { templates: 'Ready', generator: 'Ready', lifecycle: 'Ready', registry: 'Healthy', brandResolver: 'Canonical', queue: store.automationJobs }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/opportunities') return json(res, 200, { opportunities: store.opportunities, stages });
   if (req.method === 'POST' && url.pathname === '/api/opportunities') {
     const result = validateOpportunity(await body(req));
@@ -92,4 +131,4 @@ async function serve(req, res) {
   } catch { json(res, 404, { error: 'Not found.' }); }
 }
 
-createServer(serve).listen(port, host, () => console.log(`Revenue OS running at http://localhost:${port}`));
+createServer(serve).listen(port, host, () => console.log(`Digital Employee Portal running at http://localhost:${port}`));

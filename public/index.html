@@ -3,43 +3,57 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="PROJECT FORGE Revenue OS Phase I MVP" />
-    <title>PROJECT FORGE Revenue OS</title>
+    <meta name="description" content="PROJECT FORGE Digital Employee Portal" />
+    <title>Digital Employee Portal | PROJECT FORGE</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div id="app" class="shell">
-      <section id="login-view" class="login-card">
-        <div class="brand-mark">PF</div>
-        <p class="eyebrow">PROJECT FORGE</p>
-        <h1>Revenue OS</h1>
-        <p class="muted">A focused command center for evidence-led revenue operations.</p>
-        <form id="login-form" class="stack">
-          <label>Email<input name="email" type="email" value="admin@projectforge.local" required /></label>
-          <label>Password<input name="password" type="password" value="forge-demo" required /></label>
-          <button class="primary" type="submit">Enter workspace</button>
-          <p id="login-error" class="error" role="alert"></p>
-        </form>
-        <small class="muted">Phase I demo foundation · admin@projectforge.local</small>
+      <section id="login-view" class="login-view">
+        <div class="login-panel">
+          <div class="brand-lockup"><span class="brand-mark">PF</span><span><strong>PROJECT FORGE</strong><small>Digital Employee Portal</small></span></div>
+          <p class="eyebrow">CARRIERSFY AI / EXECUTIVE CONTROL</p>
+          <h1>Manage the digital workforce.</h1>
+          <p class="lede">One auditable operating surface for every employee, lifecycle gate, mission, and factory action.</p>
+          <form id="login-form" class="form-stack">
+            <label>Email<input name="email" type="email" value="admin@projectforge.local" required /></label>
+            <label>Password<input name="password" type="password" value="forge-demo" required /></label>
+            <button class="button button-primary" type="submit"><span aria-hidden="true">↗</span> Enter portal</button>
+            <p id="login-error" class="error" role="alert"></p>
+          </form>
+          <p class="caption">Development authentication placeholder · admin@projectforge.local</p>
+        </div>
+        <div class="login-aside"><span class="eyebrow">WORKFORCE STATUS</span><strong>01</strong><span>certified digital employee</span><div class="aside-line"></div><span class="caption">Canonical records. Evidence-backed decisions. Controlled automation.</span></div>
       </section>
+
       <div id="product-view" hidden>
         <header class="topbar">
-          <div class="brand"><span class="brand-mark small">PF</span><div><strong>Revenue OS</strong><span>PROJECT FORGE</span></div></div>
-          <div class="top-actions"><span id="user-label" class="muted"></span><button id="logout" class="ghost">Sign out</button></div>
+          <button id="mobile-menu" class="icon-button" aria-label="Toggle navigation">☰</button>
+          <div class="brand-lockup"><span class="brand-mark small">PF</span><span><strong>Digital Employee Portal</strong><small>PROJECT FORGE / CARRIERSFY AI</small></span></div>
+          <div class="topbar-actions"><label class="global-search"><span aria-hidden="true">⌕</span><input id="global-search" type="search" placeholder="Search employees" aria-label="Search employees" /><kbd>⌘ K</kbd></label><span id="user-label" class="user-label"></span><button id="logout" class="text-button">Sign out</button></div>
         </header>
-        <div class="layout">
-          <aside class="sidebar">
-            <nav id="nav" aria-label="Primary navigation">
-              <button class="nav-item active" data-view="overview">Overview</button>
-              <button class="nav-item" data-view="pipeline">Pipeline</button>
-              <button class="nav-item" data-view="timeline">Customer timeline</button>
-              <button class="nav-item" data-view="insights">AI insights</button>
-              <button class="nav-item" data-view="executive">Executive view</button>
-              <button class="nav-item" data-view="settings">Settings</button>
-            </nav>
-            <div class="sidebar-note"><span class="status-dot"></span><strong>Evidence-first mode</strong><p>Insights explain their evidence and confidence.</p></div>
+        <div class="portal-layout">
+          <aside id="sidebar" class="sidebar">
+            <div>
+              <p class="nav-heading">Command</p>
+              <nav id="nav" aria-label="Primary navigation">
+                <button class="nav-item active" data-view="dashboard"><span>◈</span> Dashboard</button>
+                <button class="nav-item" data-view="employees"><span>◎</span> Employee Registry</button>
+                <button class="nav-item" data-view="missions"><span>↗</span> Mission Center</button>
+                <button class="nav-item" data-view="certifications"><span>◇</span> Certification Center</button>
+                <button class="nav-item" data-view="promotions"><span>↑</span> Promotion Center</button>
+                <button class="nav-item" data-view="hall-of-fame"><span>✦</span> Hall of Fame</button>
+              </nav>
+              <p class="nav-heading section-gap">Operations</p>
+              <nav aria-label="Operations navigation">
+                <button class="nav-item" data-view="factory"><span>▦</span> Factory</button>
+                <button class="nav-item" data-view="audit"><span>✓</span> Executive Audit</button>
+                <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+              </nav>
+            </div>
+            <div class="sidebar-footer"><span class="live-dot"></span><div><strong>System healthy</strong><small>Canonical mode active</small></div></div>
           </aside>
-          <main id="main" class="content"></main>
+          <main id="main" class="main-content"></main>
         </div>
       </div>
     </div>

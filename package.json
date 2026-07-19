@@ -2,7 +2,7 @@
   "name": "project-forge-revenue-os",
   "version": "0.1.0",
   "private": true,
-  "description": "PROJECT FORGE Revenue OS Phase I MVP",
+  "description": "PROJECT FORGE Digital Employee Portal for the Carriersfy AI workforce",
   "type": "module",
   "scripts": {
     "start": "node runtime/server.mjs",
