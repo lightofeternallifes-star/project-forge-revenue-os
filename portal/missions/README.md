@@ -1,3 +1,3 @@
 # Mission Center
 
-Owns mission list, status filters, performance score, evidence references, lessons learned, and mission history views.
+Owns mission creation, queue dispatch, employee acceptance, knowledge loading, execution controls, pause/resume, evidence, human review, reports, status filters, performance score, lessons learned, and mission history views through the Execution Engine.

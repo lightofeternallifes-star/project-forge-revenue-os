@@ -8,7 +8,7 @@
     "start": "node runtime/server.mjs",
     "dev": "node --watch runtime/server.mjs",
     "credentials:generate": "node credentials/generate.mjs",
-    "build": "node --check runtime/domain.mjs && node --check runtime/store.mjs && node --check runtime/server.mjs && node --check runtime/employee-domain.mjs && node --check runtime/employee-store.mjs && node --check credentials/engine.mjs && node --check credentials/generate.mjs && node --check public/app.js",
+    "build": "node --check runtime/domain.mjs && node --check runtime/store.mjs && node --check runtime/server.mjs && node --check runtime/employee-domain.mjs && node --check runtime/employee-store.mjs && node --check runtime/mission-domain.mjs && node --check runtime/mission-store.mjs && node --check runtime/evidence-engine.mjs && node --check runtime/execution-engine.mjs && node --check runtime/performance-engine.mjs && node --check runtime/knowledge-loop.mjs && node --check runtime/promotion-engine.mjs && node --check runtime/roi-calculator.mjs && node --check runtime/execution-dashboard.mjs && node --check credentials/engine.mjs && node --check credentials/generate.mjs && node --check public/app.js",
     "test": "node --test"
   },
   "engines": {

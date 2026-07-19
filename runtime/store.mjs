@@ -1,10 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { createEmployeeStore } from './employee-store.mjs';
+import { createMissionStore } from './mission-store.mjs';
 
 const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
 
 export function createStore() {
   const employeeStore = createEmployeeStore();
+  const missionStore = createMissionStore();
   const opportunities = [
     { id: 'opp-001', name: 'Revenue intelligence rollout', company: 'Northstar Field Services', value: 84000, stage: 'Proposal', probability: 65, owner: 'Maya Chen', updatedAt: daysAgo(2) },
     { id: 'opp-002', name: 'Pipeline operating model', company: 'Harbor & Co.', value: 42000, stage: 'Qualified', probability: 40, owner: 'Jordan Lee', updatedAt: daysAgo(9) },
@@ -28,6 +30,9 @@ export function createStore() {
     employees: employeeStore.employees,
     audits: employeeStore.audits,
     automationJobs: employeeStore.automationJobs,
+    missions: missionStore.missions,
+    dispatchLog: missionStore.dispatchLog,
+    executionLogs: missionStore.executionLogs,
     createId: () => randomUUID()
   };
 }

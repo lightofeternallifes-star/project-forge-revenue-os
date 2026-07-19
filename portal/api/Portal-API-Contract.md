@@ -30,3 +30,9 @@ Commands return `{ data: JobOrDecision, meta: { request_id, version }, errors }`
 - Commands are idempotent on request ID and employee version.
 - Authorization is evaluated before factory or lifecycle execution.
 - Errors include a stable code, human message, and remediation context.
+
+## Mission Execution Resources
+
+Mission commands use the same authenticated actor, request ID, version, and audit requirements:
+
+`POST /api/missions` creates a mission; `/assign`, `/accept`, `/reject`, `/start`, `/pause`, `/resume`, `/complete`, `/cancel`, `/archive`, `/evidence`, `/report`, and `/review` execute controlled actions. `GET /api/missions` lists the live queue and `GET /api/execution/dashboard` returns working, waiting, blocked, completed, performance, revenue, and knowledge metrics.

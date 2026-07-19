@@ -8,6 +8,9 @@ import { generateFactoryDocumentReferences } from './factory-adapter.mjs';
 import { ecosystemMetrics, ecosystemModules, plannedEmployees } from './ecosystem-domain.mjs';
 import { createStore } from './store.mjs';
 import { credentialLinks } from '../credentials/engine.mjs';
+import { missionStates, missionTypes, createMission, validateMissionInput } from './mission-domain.mjs';
+import { attachEvidence, completeMission, executeMission, loadEmployeeKnowledge, requestHumanReview, transitionMission } from './execution-engine.mjs';
+import { executionDashboard } from './execution-dashboard.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
@@ -56,11 +59,12 @@ async function api(req, res, url) {
   }
   const user = requireAuth(req, res);
   if (!user) return;
-  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees.map(withCredentials), portal: portalMetrics(store.employees, store.automationJobs, store.audits), ecosystem: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, audits: store.audits });
+  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees.map(withCredentials), missions: store.missions, execution: executionDashboard(store.missions, store.employees, store.automationJobs, { modules: ecosystemModules }), portal: portalMetrics(store.employees, store.automationJobs, store.audits), ecosystem: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, audits: store.audits });
   if (req.method === 'GET' && url.pathname === '/api/ecosystem') return json(res, 200, { data: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/workforce') return json(res, 200, { data: { employees: store.employees, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/knowledge') return json(res, 200, { data: { records: store.employees.flatMap((employee) => employee.knowledgeProfile.domains.map((domain) => ({ domain, owner: employee.employeeName, usage: employee.evidence.length, status: 'Canonical' }))), metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/revenue') return json(res, 200, { data: { contributions: store.employees.map((employee) => ({ employeeNumber: employee.employeeNumber, employeeName: employee.employeeName, revenueGenerated: employee.revenueGenerated, missionCount: employee.missionHistory.length })), metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/execution/dashboard') return json(res, 200, { data: executionDashboard(store.missions, store.employees, store.automationJobs, { modules: ecosystemModules }), errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/employees') {
     const search = String(url.searchParams.get('search') || '').toLowerCase();
     const status = url.searchParams.get('status');
@@ -90,7 +94,51 @@ async function api(req, res, url) {
     store.automationJobs.unshift({ id: store.createId(), command: 'Create Digital Employee', status: 'Queued', employeeNumber: employee.employeeNumber, updatedAt: new Date().toISOString() });
     return json(res, 202, { data: employee, meta: { request_id: store.createId(), audit }, errors: [] });
   }
-  if (req.method === 'GET' && url.pathname === '/api/missions') return json(res, 200, { data: store.employees.flatMap((employee) => employee.missionHistory.map((mission) => ({ ...mission, employeeNumber: employee.employeeNumber, employeeName: employee.employeeName }))), errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/missions') {
+    const stateFilter = url.searchParams.get('state');
+    const employeeFilter = url.searchParams.get('employeeId');
+    const missions = store.missions.filter((mission) => (!stateFilter || mission.state === stateFilter) && (!employeeFilter || mission.employeeId === employeeFilter));
+    return json(res, 200, { data: missions, meta: { total: missions.length, states: missionStates, types: missionTypes }, errors: [] });
+  }
+  if (req.method === 'POST' && url.pathname === '/api/missions') {
+    const result = validateMissionInput(await body(req), store.employees);
+    if (!result.ok) return json(res, 400, { error: result.error });
+    const mission = createMission(result.input, `mission-${store.createId()}`, user.name);
+    store.missions.unshift(mission);
+    store.dispatchLog.push({ missionId: mission.id, action: 'Created', at: mission.createdAt, actor: user.name });
+    return json(res, 201, { data: mission, errors: [] });
+  }
+  const missionMatch = url.pathname.match(/^\/api\/missions\/([^/]+)$/);
+  const missionActionMatch = url.pathname.match(/^\/api\/missions\/([^/]+)\/(assign|accept|reject|start|pause|resume|complete|cancel|archive|evidence|report|review|timeline)$/);
+  const missionId = missionMatch?.[1] || missionActionMatch?.[1];
+  const mission = missionId ? store.missions.find((item) => item.id === missionId) : null;
+  if (missionId && !mission) return json(res, 404, { error: 'Mission not found.' });
+  if (req.method === 'GET' && missionMatch) return json(res, 200, { data: mission, errors: [] });
+  if (req.method === 'GET' && missionActionMatch?.[2] === 'timeline') return json(res, 200, { data: mission.logs, errors: [] });
+  if (req.method === 'POST' && missionActionMatch) {
+    const action = missionActionMatch[2];
+    const input = await body(req);
+    const employee = store.employees.find((item) => item.employeeId === (input.employeeId || mission.employeeId));
+    if (['assign', 'accept', 'start', 'complete', 'resume', 'pause'].includes(action) && !employee) return json(res, 400, { error: 'A valid employee assignment is required.' });
+    let result;
+    if (action === 'assign') { mission.employeeId = employee.employeeId; result = transitionMission(mission, 'Assigned', user.name, `Mission assigned to ${employee.employeeName}.`); }
+    if (action === 'accept') { result = transitionMission(mission, 'Preparing', employee.employeeName, 'Employee accepted the mission.'); if (result.ok) { loadEmployeeKnowledge(mission, employee, employee.employeeName); result = transitionMission(mission, 'Knowledge Loaded', employee.employeeName, 'Employee knowledge loaded for execution.'); } }
+    if (action === 'reject' || action === 'cancel') result = transitionMission(mission, 'Cancelled', employee?.employeeName || user.name, input.reason || 'Mission cancelled by authorized actor.');
+    if (action === 'start') { if (mission.state === 'Assigned') { result = transitionMission(mission, 'Preparing', employee.employeeName, 'Dispatcher opened preparation.'); if (result.ok) { loadEmployeeKnowledge(mission, employee, employee.employeeName); result = transitionMission(mission, 'Knowledge Loaded', employee.employeeName, 'Knowledge loaded by dispatcher.'); } } if (result?.ok !== false && mission.state === 'Knowledge Loaded') result = transitionMission(mission, 'Executing', employee.employeeName, 'Employee began execution.'); if (result?.ok !== false && mission.state === 'Executing') result = executeMission(mission, employee, employee.employeeName); }
+    if (action === 'pause') result = transitionMission(mission, 'Waiting', employee.employeeName, input.reason || 'Employee paused execution.');
+    if (action === 'resume') result = transitionMission(mission, 'Executing', employee.employeeName, 'Employee resumed execution.');
+    if (action === 'complete') result = completeMission(mission, employee, employee.employeeName);
+    if (action === 'archive') result = transitionMission(mission, 'Archived', user.name, 'Mission archived after closure.');
+    if (action === 'evidence') result = attachEvidence(mission, { ...input, actor: user.name });
+    if (action === 'report') { mission.report = { missionId: mission.id, generatedAt: new Date().toISOString(), state: mission.state, objective: mission.objective, execution: mission.execution, evidence: mission.evidence, performance: mission.performance, roi: mission.roi, knowledgeFeedback: mission.knowledgeFeedback, promotionEvaluation: mission.promotionEvaluation }; result = { ok: true, report: mission.report }; }
+    if (action === 'review') result = { ok: true, review: requestHumanReview(mission, user.name, input.reason) };
+    if (!result?.ok) return json(res, 400, { error: result?.error || 'Mission action failed.' });
+    if (employee) { employee.missionStatus = ['Preparing', 'Knowledge Loaded', 'Executing'].includes(mission.state) ? 'In progress' : mission.state === 'Waiting' ? 'Blocked' : mission.state === 'Completed' ? 'Completed' : 'No mission'; employee.updatedAt = new Date().toISOString(); }
+    mission.updatedAt = new Date().toISOString();
+    store.dispatchLog.push({ missionId: mission.id, action, at: mission.updatedAt, actor: user.name });
+    store.executionLogs.push(...mission.logs.slice(-1));
+    return json(res, 200, { data: mission, errors: [] });
+  }
   if (req.method === 'GET' && url.pathname === '/api/certifications') return json(res, 200, { data: store.employees.map((employee) => ({ employeeNumber: employee.employeeNumber, employeeName: employee.employeeName, level: employee.certificationLevel, graduationDate: employee.graduationDate, documents: employee.documents.filter((document) => ['Graduation Certificate', 'Diploma', 'Executive Audit'].includes(document.name)) })), errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/promotions') return json(res, 200, { data: store.employees.flatMap((employee) => employee.timeline.filter((event) => event.type === 'Promotion').map((event) => ({ ...event, employeeNumber: employee.employeeNumber, employeeName: employee.employeeName }))), errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/hall-of-fame') return json(res, 200, { data: store.employees.filter((employee) => employee.hallOfFameStatus === 'Published'), errors: [] });
