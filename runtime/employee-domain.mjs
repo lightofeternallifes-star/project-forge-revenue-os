@@ -28,6 +28,7 @@ export function normalizeEmployee(input) {
     hireDate: input.hireDate || input.hire_date || null,
     graduationDate: input.graduationDate || input.graduation_date || null,
     deploymentStatus: input.deploymentStatus || input.deployment_status || 'Undeployed',
+    supervisorId: input.supervisorId || input.supervisor_id || null,
     missionStatus: input.missionStatus || input.mission_status || 'No mission',
     missionHistory: input.missionHistory || input.mission_history || [],
     trainingHistory: input.trainingHistory || input.training_history || [],

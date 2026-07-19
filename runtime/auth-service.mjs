@@ -48,7 +48,7 @@ export async function createAuthService(store, root) {
       return publicUser(user);
     },
     async authenticate(email, password) {
-      const user = store.users.find((candidate) => candidate.email === String(email || '').trim().toLowerCase() && candidate.status === 'active');
+      const user = store.users.find((candidate) => candidate.email === String(email || '').trim().toLowerCase() && candidate.status === 'active' && (!candidate.organizationId || store.organizations.some((organization) => organization.id === candidate.organizationId && organization.status === 'active')));
       if (!user || !(await verifyPassword(String(password || ''), user.passwordHash))) return null;
       const token = randomBytes(32).toString('hex');
       const session = { ...publicUser(user), issuedAt: new Date().toISOString() };
@@ -63,6 +63,9 @@ export async function createAuthService(store, root) {
       const token = (req.headers.cookie || '').split(';').map((item) => item.trim()).find((item) => item.startsWith('forge_session='))?.split('=')[1];
       if (token) store.sessions.delete(token);
     },
-    roles
+    roles,
+    hashPassword,
+    persist,
+    async revokeUserSessions(userId) { for (const [token, session] of store.sessions) if (session.id === userId) store.sessions.delete(token); }
   };
 }

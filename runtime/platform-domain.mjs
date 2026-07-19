@@ -1,7 +1,9 @@
-export const roles = ['SUPER_ADMIN', 'COMPANY_ADMIN', 'STAFF', 'VIEWER'];
+export const roles = ['SUPER_ADMIN', 'COMPANY_ADMIN', 'MANAGER', 'SUPERVISOR', 'STAFF', 'VIEWER'];
 export const permissions = {
   SUPER_ADMIN: ['platform:read', 'platform:write', 'organization:read', 'organization:write', 'resource:read', 'resource:write', 'mission:execute', 'audit:read'],
   COMPANY_ADMIN: ['organization:read', 'organization:write', 'resource:read', 'resource:write', 'mission:execute', 'audit:read'],
+  MANAGER: ['organization:read', 'resource:read', 'resource:write', 'mission:execute', 'audit:read'],
+  SUPERVISOR: ['organization:read', 'resource:read', 'mission:execute', 'audit:read'],
   STAFF: ['organization:read', 'resource:read', 'mission:execute'],
   VIEWER: ['organization:read', 'resource:read', 'audit:read']
 };

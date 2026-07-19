@@ -11,7 +11,9 @@ export function initializeTenancy(store) {
 }
 
 export function visibleRecords(store, user) {
-  return { employees: scopeRecords(user, store.employees), missions: scopeRecords(user, store.missions), contracts: scopeRecords(user, store.contracts), audits: scopeRecords(user, store.audits), opportunities: scopeRecords(user, store.opportunities), timeline: scopeRecords(user, store.timeline), knowledgeRecords: scopeRecords(user, store.knowledgeRecords || []), evidenceRecords: scopeRecords(user, store.evidenceRecords || []), performanceMetrics: scopeRecords(user, store.performanceMetrics || []) };
+  const activeOrganizations = new Set(store.organizations.filter((organization) => organization.status === 'active').map((organization) => organization.id));
+  const allowed = (record) => user.role === 'SUPER_ADMIN' || (activeOrganizations.has(user.organizationId) && record.organizationId === user.organizationId);
+  return { employees: store.employees.filter(allowed), missions: store.missions.filter(allowed), contracts: store.contracts.filter(allowed), audits: store.audits.filter(allowed), opportunities: store.opportunities.filter(allowed), timeline: store.timeline.filter(allowed), knowledgeRecords: (store.knowledgeRecords || []).filter(allowed), evidenceRecords: (store.evidenceRecords || []).filter(allowed), performanceMetrics: (store.performanceMetrics || []).filter(allowed) };
 }
 
 export function createOrganizationProvisioning(store, input) {

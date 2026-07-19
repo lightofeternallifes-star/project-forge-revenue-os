@@ -168,7 +168,7 @@ function render() {
   bindViewActions();
 }
 
-async function refresh() { state.data = await request("/api/bootstrap"); state.userRole = state.data.user.role; document.querySelector("#user-label").textContent = state.data.user.name + " · " + state.data.user.role; if (!window.location.hash) state.view = state.userRole === "STAFF" ? "missions" : "dashboard"; routeFromHash(); render(); }
+async function refresh() { state.data = await request("/api/bootstrap"); state.userRole = state.data.user.role; document.querySelector("#user-label").textContent = state.data.user.name + " · " + state.data.user.role; const selector = document.querySelector("#organization-selector"); selector.innerHTML = (state.data.organizations || []).map((organization) => "<option value=\"" + esc(organization.id) + "\">" + esc(organization.name) + "</option>").join(""); selector.disabled = (state.data.organizations || []).length < 2; state.data.notifications = (await request("/api/notifications")).data; document.querySelector("#notifications").title = state.data.notifications.filter((notification) => !notification.readAt).length + " unread notifications"; if (!window.location.hash) state.view = state.userRole === "STAFF" ? "missions" : "dashboard"; routeFromHash(); render(); }
 function go(view) { state.view = view; if (view !== 'employee') state.selected = null; window.location.hash = view === 'employee' && state.selected ? `employee/${state.selected.employeeId}` : view; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function routeFromHash() { const [view, employeeId] = window.location.hash.replace(/^#/, '').split('/'); if (view === 'employee' && employeeId && state.data) { state.selected = state.data.employees.find((employee) => employee.employeeId === employeeId) || null; state.view = 'employee'; } else if (view && ['dashboard', 'ecosystem', 'workforce', 'employees', 'missions', 'certifications', 'training', 'promotions', 'hall-of-fame', 'factory', 'create', 'audit', 'analytics', 'knowledge', 'settings'].includes(view)) { state.view = view; state.selected = null; } }
 
@@ -193,7 +193,7 @@ $('#login-form').addEventListener('submit', async (event) => { event.preventDefa
 $('#logout').addEventListener('click', async () => { await request('/api/auth/logout', { method: 'POST' }); $('#product-view').hidden = true; $('#login-view').hidden = false; });
 document.querySelectorAll('.nav-item').forEach((button) => button.addEventListener('click', () => go(button.dataset.view)));
 $('#mobile-menu').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
-$('#global-search').addEventListener('input', (event) => { state.search = event.target.value; state.view = 'employees'; render(); });
+document.querySelector("#global-search").addEventListener("input", (event) => { state.search = event.target.value; state.view = "employees"; render(); }); document.querySelector("#notifications").addEventListener("click", () => window.alert((state.data?.notifications || []).filter((notification) => !notification.readAt).map((notification) => notification.title).join("\n") || "No unread notifications."));
 window.addEventListener('keydown', (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); $('#global-search').focus(); } });
 window.addEventListener('hashchange', () => { routeFromHash(); render(); });
 request('/api/bootstrap').then(() => { $('#login-view').hidden = true; $('#product-view').hidden = false; return refresh(); }).catch(() => {});

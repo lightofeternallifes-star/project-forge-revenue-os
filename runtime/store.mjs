@@ -43,6 +43,7 @@ export function createStore() {
     evidenceRecords: [],
     performanceMetrics: [],
     missionQueues: [],
+    notifications: [],
     contractLogs: contractStore.contractLogs,
     createId: () => randomUUID()
   };

@@ -1,0 +1,4 @@
+export function createNotificationService(store) {
+  store.notifications ||= [];
+  return { list(user) { return store.notifications.filter((notification) => notification.userId === user.id && (user.role === 'SUPER_ADMIN' || notification.organizationId === user.organizationId)); }, create(input, actor) { const notification = { id: store.createId(), organizationId: actor.organizationId || input.organizationId, userId: input.userId, type: input.type || 'system', title: input.title, message: input.message, readAt: null, createdAt: new Date().toISOString() }; store.notifications.unshift(notification); return notification; }, read(user, id) { const notification = this.list(user).find((item) => item.id === id); if (!notification) return null; notification.readAt = new Date().toISOString(); return notification; } };
+}

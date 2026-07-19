@@ -23,6 +23,7 @@ import { visibleRecords, createOrganizationProvisioning } from './tenant-service
 import { can } from './platform-domain.mjs';
 import { createKnowledgeRepository } from './knowledge-repository.mjs';
 import { executiveDashboard } from './dashboard-service.mjs';
+import { createPlatformApi } from './platform-api.mjs';
 import { hydrateStore, createStorePersistence } from './store-persistence.mjs';
 import { provisionOrganization } from './provisioning-service.mjs';
 
@@ -35,12 +36,14 @@ const store = await hydrateStore(createStore(), root);
 const persistStore = createStorePersistence(store, root);
 const auth = await createAuthService(store, root);
 const knowledgeRepository = createKnowledgeRepository(store);
+const platformApi = createPlatformApi(store, auth);
 const withCredentials = (employee) => ({ ...employee, credentialLinks: credentialLinks(employee.employeeNumber) });
 
 const json = (res, status, body, headers = {}) => {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', ...headers });
   res.end(JSON.stringify(body));
   void persistStore();
+  return true;
 };
 
 async function body(req) {
@@ -67,6 +70,10 @@ async function api(req, res, url) {
     if (!process.env.FORGE_PROVISIONING_KEY || req.headers['x-forge-provisioning-key'] !== process.env.FORGE_PROVISIONING_KEY) return json(res, 403, { error: 'Provisioning authorization required.' });
     try { const result = await provisionOrganization(store, auth, await body(req)); return json(res, 201, { data: result, errors: [] }); } catch (error) { return json(res, 400, { error: error.message }); }
   }
+  if (req.method === 'POST' && url.pathname === '/api/auth/register') {
+    if (!process.env.FORGE_REGISTRATION_KEY || req.headers['x-forge-registration-key'] !== process.env.FORGE_REGISTRATION_KEY) return json(res, 403, { error: 'Registration authorization required.' });
+    const input = await body(req); const organization = store.organizations.find((item) => item.id === input.organizationId && item.status === 'active'); if (!organization) return json(res, 404, { error: 'Active organization not found.' }); try { const user = await auth.createUser({ email: input.email, name: input.name, password: input.password, role: 'STAFF' }, organization.id); return json(res, 201, { user }); } catch (error) { return json(res, 400, { error: error.message }); }
+  }
   if (req.method === 'POST' && url.pathname === '/api/auth/logout') {
     auth.logout(req);
     return json(res, 200, { ok: true }, { 'set-cookie': 'forge_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0' });
@@ -76,6 +83,7 @@ async function api(req, res, url) {
   const visible = visibleRecords(store, user);
   const visibleOrganizations = store.organizations.filter((organization) => user.role === "SUPER_ADMIN" || organization.id === user.organizationId);
   const actorOrganizationId = user.organizationId || store.organizations[0]?.id;
+  if (await platformApi(req, res, url, user, visible, body, json)) return;
   if (req.method === 'GET' && url.pathname === '/api/organizations') return json(res, 200, { data: visibleOrganizations, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/dashboard') return json(res, 200, { data: executiveDashboard({ organizations: visibleOrganizations, employees: visible.employees, missions: visible.missions, contracts: visible.contracts, knowledgeRecords: visible.knowledgeRecords, evidenceRecords: visible.evidenceRecords }), errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/knowledge/records') return json(res, 200, { data: knowledgeRepository.list(user), errors: [] });
