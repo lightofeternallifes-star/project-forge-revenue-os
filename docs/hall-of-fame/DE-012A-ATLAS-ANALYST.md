@@ -31,3 +31,5 @@ The founding Atlas role was defined to research accounts and contacts, assemble 
 ## Certification Record
 
 This profile preserves the Mission 009 founding certification record. The certification date and historic achievements are permanent historical facts within this archive. Future amendments may clarify the record, but may not remove or reorder this entry.
+
+The complete corporate employee lifecycle, graduation package, promotion record, and registry are maintained in [`docs/employees/Employee-Index.md`](../employees/Employee-Index.md).

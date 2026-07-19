@@ -19,6 +19,8 @@ The Hall of Fame is an institutional archive, not application documentation. Ent
 2. [Founding Digital Employees](FOUNDING_DIGITAL_EMPLOYEES.md)
 3. [DE-012A — Atlas Analyst™](DE-012A-ATLAS-ANALYST.md)
 
+The permanent employee lifecycle, graduation artifacts, and registry for DE-012A are indexed in [`docs/employees/Employee-Index.md`](../employees/Employee-Index.md).
+
 ## Evidence Standard
 
 Each entry identifies the certification record and relevant PROJECT FORGE source documents supporting its historical claims. The archive records certification as a governed status; it does not imply unrestricted autonomy or authority beyond the employee's documented role and permissions.
