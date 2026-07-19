@@ -12,6 +12,8 @@ export const requiredDocuments = [
 
 export function normalizeEmployee(input) {
   return {
+    platformId: input.platformId || input.platform_id || null,
+    organizationId: input.organizationId || input.organization_id || null,
     employeeId: String(input.employeeId || input.employee_id || '').trim(),
     employeeNumber: String(input.employeeNumber || input.employee_number || '').trim(),
     employeeName: String(input.employeeName || input.employee_name || '').trim(),

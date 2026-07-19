@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { createEmployeeStore } from './employee-store.mjs';
 import { createMissionStore } from './mission-store.mjs';
 import { createWorkContractStore } from './work-contract-store.mjs';
+import { initializeTenancy } from './tenant-service.mjs';
 
 const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
 
@@ -23,12 +24,12 @@ export function createStore() {
   ];
   const settings = { workspaceName: 'PROJECT FORGE Revenue OS', timezone: 'America/New_York', defaultCurrency: 'USD', insightMode: 'Evidence-first' };
   const sessions = new Map();
-  return {
+  const state = {
     opportunities,
     timeline,
     settings,
     sessions,
-    users: [{ id: 'user-001', email: 'admin@projectforge.local', password: 'forge-demo', name: 'Executive User', role: 'Administrator' }],
+    users: [],
     employees: employeeStore.employees,
     audits: employeeStore.audits,
     automationJobs: employeeStore.automationJobs,
@@ -36,7 +37,15 @@ export function createStore() {
     dispatchLog: missionStore.dispatchLog,
     executionLogs: missionStore.executionLogs,
     contracts: contractStore.contracts,
+    platform: null,
+    organizations: [],
+    knowledgeRecords: [],
+    evidenceRecords: [],
+    performanceMetrics: [],
+    missionQueues: [],
     contractLogs: contractStore.contractLogs,
     createId: () => randomUUID()
   };
+  initializeTenancy(state);
+  return state;
 }

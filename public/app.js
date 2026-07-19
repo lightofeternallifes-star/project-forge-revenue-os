@@ -1,4 +1,4 @@
-const state = { view: 'dashboard', selected: null, search: '', status: '', department: '', missionComposer: false, missionReport: null, data: null };
+const state = { view: 'dashboard', userRole: null, selected: null, search: '', status: '', department: '', missionComposer: false, missionReport: null, data: null };
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
 const formatDate = (value) => value ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value)) : 'Not set';
@@ -157,7 +157,7 @@ function auditView() {
 function settingsView() {
   const { settings } = state.data;
   return `${header('Configuration', 'Settings', 'Portal configuration and production readiness boundaries.')}
-    <div class="grid two-col"><section class="panel"><form id="settings-form" class="form-stack">${panelHead('Workspace', 'Current runtime preferences')}<label>Workspace name<input name="workspaceName" value="${esc(settings.workspaceName)}" /></label><label>Timezone<input name="timezone" value="${esc(settings.timezone)}" /></label><label>Insight mode<input name="insightMode" value="${esc(settings.insightMode)}" /></label><button class="button button-primary" type="submit">Save settings</button><p id="settings-message" class="metric-note"></p></form></section><section class="panel">${panelHead('Access and integrations', 'Production controls required before deployment')}<div class="stat-list"><div class="stat-row"><span>Authentication</span>${badge('Placeholder')}</div><div class="stat-row"><span>Canonical model</span>${badge('Active')}</div><div class="stat-row"><span>Brand resolver</span>${badge('Canonical')}</div><div class="stat-row"><span>Durable storage</span>${badge('Future')}</div><div class="stat-row"><span>SSO / RBAC</span>${badge('Future')}</div></div></section></div>`;
+    <div class="grid two-col"><section class="panel"><form id="settings-form" class="form-stack">${panelHead('Workspace', 'Current runtime preferences')}<label>Workspace name<input name="workspaceName" value="${esc(settings.workspaceName)}" /></label><label>Timezone<input name="timezone" value="${esc(settings.timezone)}" /></label><label>Insight mode<input name="insightMode" value="${esc(settings.insightMode)}" /></label><button class="button button-primary" type="submit">Save settings</button><p id="settings-message" class="metric-note"></p></form></section><section class="panel">${panelHead('Access and integrations', 'Production controls required before deployment')}<div class="stat-list"><div class="stat-row"><span>Authentication</span>${badge('Configured')}</div><div class="stat-row"><span>Canonical model</span>${badge('Active')}</div><div class="stat-row"><span>Brand resolver</span>${badge('Canonical')}</div><div class="stat-row"><span>Durable storage</span>${badge('File-backed')}</div><div class="stat-row"><span>SSO / RBAC</span>${badge('File-backed')}</div></div></section></div>`;
 }
 
 function render() {
@@ -168,7 +168,7 @@ function render() {
   bindViewActions();
 }
 
-async function refresh() { state.data = await request('/api/bootstrap'); $('#user-label').textContent = `${state.data.user.name} · ${state.data.user.role}`; routeFromHash(); render(); }
+async function refresh() { state.data = await request("/api/bootstrap"); state.userRole = state.data.user.role; document.querySelector("#user-label").textContent = state.data.user.name + " · " + state.data.user.role; if (!window.location.hash) state.view = state.userRole === "STAFF" ? "missions" : "dashboard"; routeFromHash(); render(); }
 function go(view) { state.view = view; if (view !== 'employee') state.selected = null; window.location.hash = view === 'employee' && state.selected ? `employee/${state.selected.employeeId}` : view; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function routeFromHash() { const [view, employeeId] = window.location.hash.replace(/^#/, '').split('/'); if (view === 'employee' && employeeId && state.data) { state.selected = state.data.employees.find((employee) => employee.employeeId === employeeId) || null; state.view = 'employee'; } else if (view && ['dashboard', 'ecosystem', 'workforce', 'employees', 'missions', 'certifications', 'training', 'promotions', 'hall-of-fame', 'factory', 'create', 'audit', 'analytics', 'knowledge', 'settings'].includes(view)) { state.view = view; state.selected = null; } }
 

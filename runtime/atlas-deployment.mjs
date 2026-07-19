@@ -9,7 +9,7 @@ export async function deployAtlas(store, root) {
   const employee = store.employees.find((item) => item.employeeNumber === 'DE-012A');
   const input = validateMissionInput({ title: 'Mission 015: Repository Analysis', type: 'Repository Audit', objective: 'Analyze the PROJECT FORGE repository structure, documentation, runtime, tests, and package configuration; produce evidence and an executive report.', employeeId: employee.employeeId, revenueImpact: 0, hoursSaved: 0, customerImpact: 'Repository governance and workforce readiness' }, store.employees);
   if (!input.ok) throw new Error(input.error);
-  const mission = createMission(input.input, 'mission-015-atlas-repository-audit', 'Executive Office');
+  const mission = { ...createMission(input.input, 'mission-015-atlas-repository-audit', 'Executive Office'), organizationId: store.organizations[0].id };
   mission.deploymentKey = 'MISSION-015-ATLAS-REPOSITORY-AUDIT';
   store.missions.unshift(mission);
   transitionMission(mission, 'Assigned', 'Executive Office', 'Mission 015 automatically assigned to DE-012A.');

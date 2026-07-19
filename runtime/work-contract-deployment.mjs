@@ -11,7 +11,7 @@ export async function deployFirstWorkContract(store, root) {
   if (existing) return existing;
   const result = validateWorkContractInput({ contractId: 'contract-016-atlas-repository-health', client: 'Carriersfy AI', project: 'PROJECT FORGE Internal Operations', businessObjective: 'Validate repository operational readiness and preserve evidence for executive action.', expectedDeliverable: 'Evidence-backed repository health report.', priority: 'High', requiredSkills: ['Knowledge governance', 'Evidence quality', 'Repository analysis'], reviewer: 'Executive User', dueDate: new Date(Date.now() + 86400000).toISOString(), successCriteria: 'Repository is inspected read-only and findings are traceable to generated evidence.', evidenceRequired: true, completionRequirements: 'Mission completed, evidence stored, report generated, supervisor approval recorded.', roiTarget: 0, missionTemplate: 'Repository Health' }, store.employees);
   if (!result.ok) throw new Error(result.error);
-  const contract = createWorkContract(result.input, result.input.contractId, 'Executive Office');
+  const contract = { ...createWorkContract(result.input, result.input.contractId, 'Executive Office'), organizationId: store.organizations[0].id };
   contract.deploymentKey = 'MISSION-016-FIRST-INTERNAL-CONTRACT';
   store.contracts.unshift(contract);
   const assignment = assignContract(contract, store.employees, 'Executive Queue', 'employee-001');
@@ -19,7 +19,7 @@ export async function deployFirstWorkContract(store, root) {
   const employee = store.employees.find((item) => item.employeeId === contract.assignedEmployeeId);
   const missionResult = validateMissionInput({ title: 'Mission 016: Repository Health Contract', type: 'Repository Health', objective: contract.businessObjective, employeeId: employee.employeeId, dueDate: contract.dueDate, revenueImpact: 0, hoursSaved: 0, customerImpact: 'Internal operating readiness', reusableKnowledge: 'Contract-based work routing and evidence-backed repository health.', recommendedImprovements: 'Use supervisor review outcomes to tune assignment and SLA policies.' }, store.employees);
   if (!missionResult.ok) throw new Error(missionResult.error);
-  const mission = createMission(missionResult.input, 'mission-016-atlas-contract', 'Work Contract Engine');
+  const mission = { ...createMission(missionResult.input, 'mission-016-atlas-contract', 'Work Contract Engine'), organizationId: contract.organizationId };
   mission.contractId = contract.contractId;
   store.missions.unshift(mission);
   transitionMission(mission, 'Assigned', 'Work Contract Engine', 'Contract assignment dispatched to Atlas Analyst.');

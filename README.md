@@ -82,7 +82,7 @@ Use these labels consistently:
 
 ## Current Status
 
-Phase I now includes a dependency-free executable MVP. The runtime is intentionally bounded: it provides a local authenticated workspace, pipeline management, opportunity records, deterministic evidence-first insights, KPIs, timeline, executive review, and settings. External providers, persistence, and autonomous execution remain deferred behind the documented provider-neutral boundaries.
+Phase I now includes a dependency-free executable MVP. The runtime is intentionally bounded: it provides a local authenticated workspace, pipeline management, opportunity records, deterministic evidence-first insights, KPIs, timeline, executive review, and settings. Managed database, external identity providers, and autonomous execution remain behind documented provider-neutral boundaries; the current foundation provides file-backed runtime persistence.
 
 ## Run the MVP
 
@@ -93,7 +93,7 @@ npm test
 npm start
 ```
 
-Open `http://localhost:3000` and use `admin@projectforge.local` / `forge-demo` for the local demo foundation. See [`IMPLEMENTATION-REPORT.md`](IMPLEMENTATION-REPORT.md) for delivered scope, limitations, and the next sprint.
+Open `http://localhost:3000`. Configure `FORGE_BOOTSTRAP_EMAIL`, `FORGE_BOOTSTRAP_PASSWORD`, and `FORGE_PROVISIONING_KEY` before first administration. See [`IMPLEMENTATION-REPORT-MISSION-017.md`](IMPLEMENTATION-REPORT-MISSION-017.md) for the platform foundation.
 
 ## GitHub Launch
 

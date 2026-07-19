@@ -1,0 +1,5 @@
+export function executiveDashboard(records) {
+  const { organizations, employees, missions, contracts, knowledgeRecords, evidenceRecords } = records;
+  const completed = missions.filter((mission) => ['Completed', 'Archived'].includes(mission.state));
+  return { organizations: organizations.length, employees: employees.length, runningMissions: missions.filter((mission) => ['Executing', 'Running'].includes(mission.state)).length, completedMissions: completed.length, averagePerformance: employees.length ? Math.round(employees.reduce((sum, employee) => sum + Number(employee.performanceMetrics?.score || 0), 0) / employees.length) : 0, knowledgeGrowth: knowledgeRecords.length, evidenceGenerated: evidenceRecords.length || missions.reduce((sum, mission) => sum + (mission.evidence?.length || 0), 0), revenueMetrics: { generated: employees.reduce((sum, employee) => sum + Number(employee.revenueGenerated || 0), 0), contracts: contracts.reduce((sum, contract) => sum + Number(contract.metrics?.revenueContribution || 0), 0) } };
+}

@@ -1,9 +1,9 @@
-# PROJECT FORGE Revenue OS — Phase I MVP
+# PROJECT FORGE Revenue OS — Real Platform Foundation
 
 ## Delivered
 
 - Responsive Revenue OS dashboard with overview, pipeline, customer timeline, AI insights, executive view, and settings.
-- In-memory authenticated session foundation with secure HTTP-only session cookie behavior.
+- Password-hash authentication with secure HTTP-only session cookies, roles, tenant scope, and environment-controlled bootstrap.
 - Pipeline management: create opportunities, stage updates, probability, owner, and value.
 - KPI engine: active pipeline, weighted pipeline, won revenue, win rate, deal size, and coverage.
 - Evidence-first AI revenue insights using deterministic rules with evidence and confidence values.
@@ -22,15 +22,15 @@ npm start
 
 Open `http://localhost:3000`.
 
-Demo login: `admin@projectforge.local` / `forge-demo`.
+Configure `FORGE_BOOTSTRAP_EMAIL` and `FORGE_BOOTSTRAP_PASSWORD` before first administration.
 
 ## Known limitations
 
-- Persistence is in-memory and resets on restart.
-- Authentication is a foundation/demo, not production identity management.
+- Authentication records persist through the file-backed repository boundary; deploy production secrets and storage controls before customer launch.
+- External identity providers and distributed session storage remain adapter substitutions behind the auth service.
 - AI insights are deterministic Phase I rules; no model provider is connected.
 - No external CRM, email, calendar, or provider integration is enabled.
-- No multi-tenant authorization or persistent audit store is included yet.
+- Tenant-scoped authorization and organization provisioning are implemented; managed database and distributed audit persistence remain infrastructure substitutions.
 
 ## Next sprint
 
