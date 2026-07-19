@@ -5,13 +5,17 @@ import { fileURLToPath } from 'node:url';
 import { calculateKpis, generateInsights, stages, validateOpportunity } from './domain.mjs';
 import { auditEmployee, portalMetrics, validateEmployeeInput } from './employee-domain.mjs';
 import { generateFactoryDocumentReferences } from './factory-adapter.mjs';
+import { ecosystemMetrics, ecosystemModules, plannedEmployees } from './ecosystem-domain.mjs';
 import { createStore } from './store.mjs';
+import { credentialLinks } from '../credentials/engine.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const publicDir = join(root, 'public');
+const credentialsDir = join(root, 'credentials', 'generated');
 const port = Number(process.env.PORT || 3000);
 const host = process.env.HOST || '127.0.0.1';
 const store = createStore();
+const withCredentials = (employee) => ({ ...employee, credentialLinks: credentialLinks(employee.employeeNumber) });
 
 const json = (res, status, body, headers = {}) => {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', ...headers });
@@ -52,19 +56,29 @@ async function api(req, res, url) {
   }
   const user = requireAuth(req, res);
   if (!user) return;
-  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees, portal: portalMetrics(store.employees, store.automationJobs, store.audits), audits: store.audits });
+  if (req.method === 'GET' && url.pathname === '/api/bootstrap') return json(res, 200, { user, stages, opportunities: store.opportunities, timeline: store.timeline, kpis: calculateKpis(store.opportunities), insights: generateInsights(store.opportunities, store.timeline), settings: store.settings, employees: store.employees.map(withCredentials), portal: portalMetrics(store.employees, store.automationJobs, store.audits), ecosystem: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, audits: store.audits });
+  if (req.method === 'GET' && url.pathname === '/api/ecosystem') return json(res, 200, { data: { modules: ecosystemModules, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/workforce') return json(res, 200, { data: { employees: store.employees, plannedEmployees, metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/knowledge') return json(res, 200, { data: { records: store.employees.flatMap((employee) => employee.knowledgeProfile.domains.map((domain) => ({ domain, owner: employee.employeeName, usage: employee.evidence.length, status: 'Canonical' }))), metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
+  if (req.method === 'GET' && url.pathname === '/api/revenue') return json(res, 200, { data: { contributions: store.employees.map((employee) => ({ employeeNumber: employee.employeeNumber, employeeName: employee.employeeName, revenueGenerated: employee.revenueGenerated, missionCount: employee.missionHistory.length })), metrics: ecosystemMetrics(store.employees, store.opportunities, store.automationJobs, store.audits) }, errors: [] });
   if (req.method === 'GET' && url.pathname === '/api/employees') {
     const search = String(url.searchParams.get('search') || '').toLowerCase();
     const status = url.searchParams.get('status');
     const department = url.searchParams.get('department');
     const employees = store.employees.filter((employee) => (!search || [employee.employeeNumber, employee.employeeName, employee.role, employee.department, employee.manager].join(' ').toLowerCase().includes(search)) && (!status || employee.employmentStatus === status) && (!department || employee.department === department));
-    return json(res, 200, { data: employees, meta: { total: employees.length }, errors: [] });
+    return json(res, 200, { data: employees.map(withCredentials), meta: { total: employees.length }, errors: [] });
+  }
+  const credentialMatch = url.pathname.match(/^\/api\/employees\/([^/]+)\/credentials$/);
+  if (req.method === 'GET' && credentialMatch) {
+    const employee = store.employees.find((item) => item.employeeId === credentialMatch[1] || item.employeeNumber === credentialMatch[1]);
+    if (!employee) return json(res, 404, { error: 'Employee not found.' });
+    return json(res, 200, { data: credentialLinks(employee.employeeNumber), errors: [] });
   }
   const employeeMatch = url.pathname.match(/^\/api\/employees\/([^/]+)$/);
   if (req.method === 'GET' && employeeMatch) {
     const employee = store.employees.find((item) => item.employeeId === employeeMatch[1] || item.employeeNumber === employeeMatch[1]);
     if (!employee) return json(res, 404, { error: 'Employee not found.' });
-    return json(res, 200, { data: employee, meta: { version: employee.version }, errors: [] });
+    return json(res, 200, { data: withCredentials(employee), meta: { version: employee.version }, errors: [] });
   }
   if (req.method === 'POST' && url.pathname === '/api/employees') {
     const result = validateEmployeeInput(await body(req), store.employees);
@@ -120,6 +134,18 @@ async function api(req, res, url) {
 async function serve(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   if (url.pathname.startsWith('/api/')) return api(req, res, url);
+  if (url.pathname.startsWith('/credentials/')) {
+    const requestedCredential = url.pathname.slice(1);
+    const file = normalize(join(root, requestedCredential));
+    if (!file.startsWith(credentialsDir)) return json(res, 403, { error: 'Forbidden.' });
+    try {
+      const content = await readFile(file);
+      const types = { '.html': 'text/html; charset=utf-8', '.json': 'application/json; charset=utf-8', '.md': 'text/markdown; charset=utf-8' };
+      res.writeHead(200, { 'content-type': types[extname(file)] || 'application/octet-stream' });
+      res.end(content);
+    } catch { json(res, 404, { error: 'Credential not found.' }); }
+    return;
+  }
   const requested = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
   const file = normalize(join(publicDir, requested));
   if (!file.startsWith(publicDir)) return json(res, 403, { error: 'Forbidden.' });

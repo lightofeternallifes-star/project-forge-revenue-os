@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node runtime/server.mjs",
     "dev": "node --watch runtime/server.mjs",
-    "build": "node --check runtime/domain.mjs && node --check runtime/store.mjs && node --check runtime/server.mjs && node --check public/app.js",
+    "credentials:generate": "node credentials/generate.mjs",
+    "build": "node --check runtime/domain.mjs && node --check runtime/store.mjs && node --check runtime/server.mjs && node --check runtime/employee-domain.mjs && node --check runtime/employee-store.mjs && node --check credentials/engine.mjs && node --check credentials/generate.mjs && node --check public/app.js",
     "test": "node --test"
   },
   "engines": {

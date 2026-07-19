@@ -33,6 +33,7 @@ export function normalizeEmployee(input) {
     competencies: input.competencies || [],
     knowledgeProfile: input.knowledgeProfile || input.knowledge_profile || { domains: [], ownership: 'Unassigned', level: 'Unassessed', memoryScope: 'None' },
     performanceMetrics: input.performanceMetrics || input.performance_metrics || { score: null, missionSuccessRate: null, evidenceCoverage: null },
+    revenueGenerated: Number(input.revenueGenerated || input.revenue_generated || 0),
     evidence: input.evidence || [],
     timeline: input.timeline || [],
     documents: input.documents || [],

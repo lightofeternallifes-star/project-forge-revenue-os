@@ -1,0 +1,25 @@
+{
+  "brand": "Carriersfy AI",
+  "status": "provisional",
+  "source_of_truth": "Corporate Brand Repository",
+  "logo": {
+    "default": "branding/canonical/logo.svg",
+    "dark": "branding/canonical/logo-dark.svg",
+    "light": "branding/canonical/logo-light.svg",
+    "official_artwork_reference": "official-carriersfy-ai-logo.svg",
+    "provisional_wrapper": true
+  },
+  "colors": {
+    "red": "#C8102E",
+    "blue": "#003B70",
+    "white": "#FFFFFF",
+    "dark_navy": "#071A33",
+    "silver": "#A7B0BC"
+  },
+  "typography": "branding/canonical/typography.json",
+  "security": {
+    "classification": "CONFIDENTIAL · CORPORATE IDENTITY RECORD",
+    "seal_reference": "official-carriersfy-ai-digital-seal",
+    "qr_reference_prefix": "https://credentials.carriersfy.ai/verify/"
+  }
+}

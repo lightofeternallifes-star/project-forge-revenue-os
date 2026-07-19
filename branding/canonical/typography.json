@@ -1,0 +1,9 @@
+{
+  "brand": "Carriersfy AI",
+  "status": "provisional",
+  "source_of_truth": "Corporate Brand Repository",
+  "display_family_reference": "official-carriersfy-ai-display-font",
+  "body_family_reference": "official-carriersfy-ai-body-font",
+  "fallback_stack": ["Helvetica Neue", "Arial", "sans-serif"],
+  "note": "Font files and approved family names are intentionally referenced, not invented, until synchronized from the Corporate Brand Repository."
+}
