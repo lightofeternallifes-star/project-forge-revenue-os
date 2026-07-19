@@ -22,4 +22,3 @@ CEO
 ## Reporting Rule
 
 The Manager owns daily work and performance. The Director owns departmental scope. The Chief Knowledge and Intelligence Officer owns executive alignment. Digital Employee Operations owns lifecycle and capability governance. Audit retains independent review authority.
-

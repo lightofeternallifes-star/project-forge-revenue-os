@@ -25,4 +25,3 @@ This corporate passport certifies organizational identity only. It grants no pro
 ## Verification
 
 Verify against the Corporate Registry, Employee Database, Digital Employee Intelligence Engine, and Audit Engine. Historical amendments must preserve this passport number and append a new passport version.
-

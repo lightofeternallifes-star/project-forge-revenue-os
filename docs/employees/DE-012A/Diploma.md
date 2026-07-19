@@ -20,8 +20,7 @@ and
 
 for demonstrated competency in evidence-driven research, knowledge governance, provider-neutral architecture, canonical intelligence, mission documentation, and auditable Digital Employee operations.
 
-**Employee ID:** `DE-012A`  
-**Diploma ID:** `DIPLOMA-CFAI-DE-012A-2026-01`  
-**Awarded:** July 18, 2026  
-**Division:** PROJECT FORGE Intelligence Division  
-
+**Employee ID:** `DE-012A`
+**Diploma ID:** `DIPLOMA-CFAI-DE-012A-2026-01`
+**Awarded:** July 18, 2026
+**Division:** PROJECT FORGE Intelligence Division

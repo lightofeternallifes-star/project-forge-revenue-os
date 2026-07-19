@@ -26,4 +26,3 @@
 2. Provider neutrality must be established before implementation.
 3. Canonical entities, events, memory, permissions, and audit are organizational infrastructure.
 4. Digital Employees need a corporate lifecycle, not only a role description.
-5. Historical records and corrections must remain append-only and reviewable.

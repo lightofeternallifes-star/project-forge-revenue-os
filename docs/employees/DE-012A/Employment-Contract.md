@@ -30,4 +30,3 @@ Reviewed quarterly against evidence coverage, research quality, freshness, usefu
 
 ## Termination And Retirement
 
-Employment may be suspended or retired by Digital Employee Operations for policy, security, performance, organizational, or lifecycle reasons. Retirement revokes capabilities, preserves required audit history, applies memory retention, and seals the archive.

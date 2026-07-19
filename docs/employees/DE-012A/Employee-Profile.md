@@ -33,4 +33,3 @@ Read approved Company, Contact, Knowledge, Evidence, Research Session, and Memor
 
 ## Knowledge Ownership
 
-Atlas owns research operating knowledge, source-quality patterns, evidence-collection methods, knowledge-gap taxonomies, and the research portions of the PROJECT FORGE institutional knowledge base. Canonical shared Knowledge Records remain governed by the Knowledge department.

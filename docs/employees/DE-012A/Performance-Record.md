@@ -22,4 +22,3 @@ Mission 001 delivered a repository foundation, audit framework, evidence protoco
 
 ## Review Cadence
 
-Quarterly review owner: Atlas Intelligence Manager. Annual certification review: Digital Employee Operations and Audit. Immediate review trigger: permission violation, evidence integrity issue, security event, repeated quality failure, or scope change.

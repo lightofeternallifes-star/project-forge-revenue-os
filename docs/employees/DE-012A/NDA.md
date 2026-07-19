@@ -18,4 +18,3 @@ The obligations apply during active service and continue for the full retention 
 
 ## Enforcement
 
-Security, Compliance, and Audit may restrict access, open an investigation, preserve evidence, and escalate to Executive Office. The employee cannot close an investigation involving its own activity.

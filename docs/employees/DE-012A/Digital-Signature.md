@@ -8,4 +8,3 @@
 - **Verification:** Match employee ID, role version, task ID, policy version, evidence references, and Audit Record
 - **Issued:** 2026-07-18
 - **Revocation authority:** Digital Employee Operations with Security and Audit acknowledgement
-

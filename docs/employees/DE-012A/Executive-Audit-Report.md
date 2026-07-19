@@ -53,4 +53,3 @@ DE-012A is approved for graduation and promotion to **Senior Knowledge Intellige
 
 ## Required Ongoing Controls
 
-Quarterly performance review, annual permission review, mission-level evidence, knowledge freshness review, Audit Engine traceability, and Digital Employee Operations oversight remain mandatory.

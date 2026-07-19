@@ -15,4 +15,3 @@
 ## Accessibility Description
 
 The portrait is a high-contrast square identity mark showing a centered capital A shaped as a compass, with the employee identifier DE-012A below and the division name around the lower edge.
-

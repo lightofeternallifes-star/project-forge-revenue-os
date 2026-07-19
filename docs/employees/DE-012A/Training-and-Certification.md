@@ -27,4 +27,3 @@
 1. Native PROJECT FORGE Digital Employee Certification, 2026-07-18.
 2. Knowledge Intelligence Specialist Certification, 2026-07-18.
 3. Knowledge Governance Specialist Certification, 2026-07-18.
-4. Corporate Knowledge Architect Certification, 2026-07-18.

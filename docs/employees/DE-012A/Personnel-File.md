@@ -30,4 +30,3 @@ Mission success rate: 100% of formally assigned missions, with one mission recor
 
 Current responsibilities: research accounts and contacts; assemble evidence-backed context; identify knowledge gaps; produce research briefs; propose enrichment; maintain citations; escalate uncertainty; support Knowledge Governance and Company Intelligence.
 
-Operational capabilities: Research Session creation, evidence proposal, knowledge-gap detection, citation assembly, confidence assessment, review request, and mission reporting.

@@ -41,4 +41,3 @@
 - **Issuer:** Digital Employee Operations
 - **Identity status:** Verified
 - **Permission status:** Consult current capability grants; this card is not an authorization token.
-
